@@ -1,31 +1,53 @@
 {
-    "C_Cpp.autoAddFileAssociations": false,
+    // ========================================
+    // VS Code 用户级别设置文件
+    // 适用于嵌入式开发环境 (FMT Firmware)
+    // ========================================
+
+    // ===== 1. C/C++ 开发环境配置 =====
+    "C_Cpp.autoAddFileAssociations": false,        // 禁用自动添加文件关联，避免意外修改文件类型
+    "C_Cpp.errorSquiggles": "Disabled",            // 禁用C/C++错误波浪线显示，减少视觉干扰
+    
+    // ===== 2. 文件类型关联配置 =====
     "files.associations": {
-        "*.h": "c",
-        "*.c": "c",
-        "*.cpp": "cpp",
-        "*.hpp": "cpp",
-        "Sconstruct": "python",
-        "SConscript": "python",
+        "*.h": "c",                                 // C头文件关联到C语言语法高亮
+        "*.c": "c",                                 // C源文件关联到C语言语法高亮
+        "*.cpp": "cpp",                             // C++源文件关联到C++语法高亮
+        "*.hpp": "cpp",                             // C++头文件关联到C++语法高亮
+        "Sconstruct": "python",                     // SCons构建文件关联到Python语法高亮
+        "SConscript": "python"                      // SCons脚本文件关联到Python语法高亮
     },
-    "C_Cpp.errorSquiggles": "Disabled",
-    "git.ignoreLimitWarning": true,
-    "cmake.configureOnOpen": false,
-    "cSpell.allowCompoundWords": true,
-    "cSpell.diagnosticLevel": "Hint",
-    "cSpell.showStatus": false,
-    "cSpell.words": [
-        "fmt",
-        "esc",
-        "rtthread"
+    
+    // ===== 3. 版本控制配置 =====
+    "git.ignoreLimitWarning": true,                 // 忽略Git忽略文件数量限制警告，避免大量忽略文件时的警告
+    
+    // ===== 4. 构建系统配置 =====
+    "cmake.configureOnOpen": false,                 // 打开项目时不自动配置CMake，提高启动速度
+    
+    // ===== 5. 拼写检查配置 =====
+    "cSpell.allowCompoundWords": true,             // 允许复合词，避免误报
+    "cSpell.diagnosticLevel": "Hint",              // 拼写检查级别设为提示，不阻塞工作流程
+    "cSpell.showStatus": false,                     // 不显示拼写检查状态栏，保持界面简洁
+    "cSpell.words": [                               // 自定义拼写检查词汇库
+        "fmt",                                      // FMT项目相关词汇
+        "esc",                                      // ESC (Electronic Speed Controller) 相关词汇
+        "rtthread"                                  // RT-Thread实时操作系统相关词汇
     ],
-    "editor.defaultFormatter": "xaver.clang-format",
-    "[jsonc]": {
-        "editor.defaultFormatter": "vscode.json-language-features"
+    
+    // ===== 6. 代码格式化配置 =====
+    "editor.defaultFormatter": "xaver.clang-format", // 设置默认代码格式化工具为clang-format
+    
+    // ===== 7. 语言特定格式化配置 =====
+    "[jsonc]": {                                    // JSONC文件专用格式化配置
+        "editor.defaultFormatter": "vscode.json-language-features"  // 使用VS Code内置JSON格式化
     },
-    "[c]": {
-        "editor.defaultFormatter": "xaver.clang-format"
+    "[c]": {                                        // C文件专用格式化配置
+        "editor.defaultFormatter": "xaver.clang-format"            // 使用clang-format格式化C代码
     },
-    "cortex-debug.variableUseNaturalFormat": true,
-    // "clang-format.executable": "/bin/clang-format-16",
+    
+    // ===== 8. 调试器配置 =====
+    "cortex-debug.variableUseNaturalFormat": true   // Cortex调试器使用自然格式显示变量，提高调试体验
+    
+    // ===== 9. 备用配置（已注释） =====
+    // "clang-format.executable": "/bin/clang-format-16", // 指定clang-format可执行文件路径（备用）
 }
