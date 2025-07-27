@@ -3,9 +3,9 @@
  *
  * Code generated for Simulink model 'Controller'.
  *
- * Model version                  : 1.977
- * Simulink Coder version         : 9.0 (R2018b) 24-May-2018
- * C/C++ source code generated on : Fri Jun  6 14:06:23 2025
+ * Model version                  : 7.0
+ * Simulink Coder version         : 9.6 (R2021b) 14-May-2021
+ * C/C++ source code generated on : Sun Jul 27 11:47:43 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex
@@ -19,7 +19,7 @@
 #include <string.h>
 #include <stddef.h>
 #ifndef Controller_COMMON_INCLUDES_
-# define Controller_COMMON_INCLUDES_
+#define Controller_COMMON_INCLUDES_
 #include "rtwtypes.h"
 #endif                                 /* Controller_COMMON_INCLUDES_ */
 
@@ -28,15 +28,16 @@
 
 /* Macros for accessing real-time model data structure */
 #ifndef rtmGetErrorStatus
-# define rtmGetErrorStatus(rtm)        ((rtm)->errorStatus)
+#define rtmGetErrorStatus(rtm)         ((rtm)->errorStatus)
 #endif
 
 #ifndef rtmSetErrorStatus
-# define rtmSetErrorStatus(rtm, val)   ((rtm)->errorStatus = (val))
+#define rtmSetErrorStatus(rtm, val)    ((rtm)->errorStatus = (val))
 #endif
 
 /* Block states (default storage) for system '<Root>' */
 typedef struct {
+  dsp_simulink_MovingAverage_Co_T obj; /* '<S70>/Moving Average' */
   real32_T Integrator1_DSTATE[2];      /* '<S99>/Integrator1' */
   real32_T DiscreteTimeIntegrator_DSTATE[2];/* '<S104>/Discrete-Time Integrator' */
   real32_T DiscreteTimeIntegrator1_DSTATE[2];/* '<S106>/Discrete-Time Integrator1' */
@@ -63,16 +64,16 @@ typedef struct {
 
 /* Invariant block signals (default storage) */
 typedef struct {
-  const real32_T VectorConcatenate3[3];/* '<S101>/Vector Concatenate3' */
-  const real32_T Constant;             /* '<S104>/Constant' */
+  const real32_T Constant[3];          /* '<S77>/Constant' */
   const real32_T Gain;                 /* '<S89>/Gain' */
-  const real32_T Constant_n[3];        /* '<S77>/Constant' */
+  const real32_T VectorConcatenate3[3];/* '<S101>/Vector Concatenate3' */
+  const real32_T Gain4;                /* '<S102>/Gain4' */
   const real32_T Square;               /* '<S102>/Square' */
   const real32_T d;                    /* '<S102>/Multiply' */
-  const real32_T Gain4;                /* '<S102>/Gain4' */
+  const real32_T Constant_g;           /* '<S104>/Constant' */
+  const real32_T Gain4_k;              /* '<S116>/Gain4' */
   const real32_T Square_g;             /* '<S116>/Square' */
   const real32_T d_n;                  /* '<S116>/Multiply' */
-  const real32_T Gain4_k;              /* '<S116>/Gain4' */
 } ConstB_Controller_T;
 
 /* Constant parameters (default storage) */
@@ -160,7 +161,7 @@ typedef struct {
 
 #ifndef CONSTP_CONTROLLER_T_VARIANT_EXISTS
 
-  char _rt_unused;
+  unsigned char rt_unused;
 
 #endif
 
@@ -179,7 +180,7 @@ typedef struct {
 
 /* Real-time Model Data Structure */
 struct tag_RTM_Controller_T {
-  const char_T *errorStatus;
+  const char_T * volatile errorStatus;
 };
 
 /* Block states (default storage) */

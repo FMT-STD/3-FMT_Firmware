@@ -1,0 +1,179 @@
+{
+    // ========================================
+    // VS Code 用户级别设置文件
+    // 适用于嵌入式开发环境
+    // ========================================
+
+    // ===== 1. 远程SSH连接配置 =====
+    "remote.SSH.path": "C:\\Windows\\System32\\OpenSSH\\ssh.exe",           // SSH客户端路径
+    "remote.SSH.logLevel": "trace",                                           // SSH连接日志级别设为详细
+    "remote.SSH.showLoginTerminal": true,                                     // 显示SSH登录终端
+    "remote.SSH.remotePlatform": {                                            // 远程主机平台配置
+        "HZ_ubuntu20": "linux",                                               // 杭州Ubuntu20服务器
+        "HZ_ubuntu18": "linux",                                               // 杭州Ubuntu18服务器
+        "px4": "linux",                                                       // PX4开发服务器
+        "ZZ_ChenTao_ubuntu20": "linux",                                       // 陈涛Ubuntu20服务器
+        "gg_thinkpad_px4": "linux",                                           // ThinkPad PX4服务器
+        "Thinkpad_ubuntu20": "linux",                                         // ThinkPad Ubuntu20服务器
+        "AMOV": "linux",                                                       // AMOV服务器
+        "gg_i7_ubuntu18": "linux",                                            // i7 Ubuntu18服务器
+        "21-深圳_ubuntu20": "linux",                                           // 深圳Ubuntu20服务器
+        "11-杭州_ubuntu20": "linux",                                           // 杭州Ubuntu20服务器
+        "12-杭州_ubuntu18": "linux",                                           // 杭州Ubuntu18服务器
+        "13-杭州_镜像编译": "linux",                                             // 杭州镜像编译服务器
+        "12-杭州_鲁班猫": "linux",                                               // 杭州鲁班猫服务器
+        "21-深圳_镜像编译": "linux",                                             // 深圳镜像编译服务器
+        "11-杭州_IPK": "linux",                                                // 杭州IPK服务器
+        "52-鲁班猫1s-小车": "linux",                                             // 鲁班猫1s小车服务器
+        "51-鲁班猫0": "linux",                                                 // 鲁班猫0服务器
+        "61-虚拟机-轮趣": "linux",                                               // 虚拟机轮趣服务器
+        "41-涛涛-ubuntu20": "linux",                                           // 涛涛Ubuntu20服务器
+        "raspberry-bcm2835": "linux",                                         // 树莓派BCM2835服务器
+        "61-lubancat0": "linux",                                              // LubanCat0服务器
+        "12-杭州-鲁班猫镜像": "linux",                                             // 杭州鲁班猫镜像服务器
+        "pve-ubuntu20-第一个": "linux",                                          // PVE Ubuntu20第一个服务器
+        "pve-imu6ull-xubuntu20": "linux",                                     // PVE IMU6ULL XUbuntu20服务器
+        "pve-fydelix-xubuntu20": "linux",                                     // PVE Fydelix XUbuntu20服务器
+        "pve-lubancat-desktop-ubuntu20": "linux",                             // PVE LubanCat桌面Ubuntu20服务器
+        "pve-px4": "linux"                                                    // PVE PX4服务器
+    },
+
+    // ===== 2. 编辑器界面配置 =====
+    "editor.mouseWheelZoom": true,                                            // 启用鼠标滚轮缩放
+    "editor.defaultFormatter": "ms-vscode.cpptools",                          // 默认代码格式化工具
+    "editor.codeLens": false,                                                 // 禁用代码镜头功能
+    "editor.suggestOnTriggerCharacters": false,                               // 禁用触发字符时的建议
+    "editor.renderWhitespace": "all",                                         // 显示所有空白字符
+
+    // ===== 3. 终端配置 =====
+    "terminal.integrated.mouseWheelZoom": true,                               // 终端启用鼠标滚轮缩放
+    "terminal.integrated.defaultProfile.windows": "MSYS2 MinGW64",            // Windows默认终端配置
+    "terminal.integrated.enableMultiLinePasteWarning": false,                 // 禁用多行粘贴警告
+    "terminal.integrated.fontSize": 13,                                       // 终端字体大小
+    "terminal.integrated.cwd": "${workspaceFolder}",                          // 终端工作目录
+    "terminal.integrated.env.windows": {                                      // Windows终端环境变量
+        "PWD_FROM_VSCODE": "${workspaceFolder}"
+    },
+    "terminal.integrated.commandsToSkipShell": [                              // 跳过shell的命令
+        "matlab.interrupt"
+    ],
+    "terminal.integrated.enablePersistentSessions": true,                     // 启用持久会话，避免进程终止警告
+    "terminal.integrated.persistentSessionReviveProcess": "never",            // 永不重新启动终止的进程
+    "terminal.integrated.profiles.windows": {                                 // Windows终端配置文件
+        "MSYS2 MinGW64": {
+            "path": "C:\\msys64\\usr\\bin\\zsh.exe",                         // 直接使用zsh，避免bash自动切换
+            "args": ["--login", "-i"],                                        // 登录参数
+            "env": {
+                "MSYSTEM": "MINGW64"                                          // MSYS2环境变量
+            },
+            "cwd": "${workspaceFolder}"                                       // 工作目录
+        },
+        "MSYS2 Bash": {                                                       // 备用bash配置
+            "path": "C:\\msys64\\usr\\bin\\bash.exe",                        // MSYS2 bash路径
+            "args": ["--login", "-i", "-c", "exec zsh"],                     // 直接执行zsh，避免进程终止
+            "env": {
+                "MSYSTEM": "MINGW64"                                          // MSYS2环境变量
+            },
+            "cwd": "${workspaceFolder}"                                       // 工作目录
+        }
+    },
+
+    // ===== 4. 差异编辑器配置 =====
+    "diffEditor.experimental.showMoves": true,                                // 显示移动的代码块
+    "diffEditor.useInlineViewWhenSpaceIsLimited": false,                      // 空间有限时不使用内联视图
+    "diffEditor.ignoreTrimWhitespace": false,                                 // 不忽略空白字符差异
+
+    // ===== 5. Git和版本控制配置 =====
+    "gitlens.views.workspaces.showIncomingActivity": true,                    // 显示传入活动
+    "git.replaceTagsWhenPull": true,                                          // 拉取时替换标签
+    "remote.autoForwardPortsSource": "hybrid",                                // 自动端口转发源
+
+    // ===== 6. C/C++ 开发配置 =====
+    "C_Cpp.clang_format_style": "",                                           // clang-format样式配置
+    "C_Cpp.intelliSenseEngine": "Tag Parser",                                // IntelliSense引擎使用Tag Parser
+    "C_Cpp.enhancedColorization": "disabled",                                // 禁用增强着色
+    "C_Cpp.clang_format_fallbackStyle": "Microsoft",                         // clang-format备用样式
+    "[cpp]": {                                                                // C++文件格式化配置
+        "editor.defaultFormatter": "ms-vscode.cpptools"
+    },
+    "[c]": {                                                                  // C文件格式化配置
+        "editor.defaultFormatter": "ms-vscode.cpptools"
+    },
+
+    // ===== 7. 工作区配置 =====
+    "workbench.editorAssociations": {                                         // 编辑器关联配置
+        "*.copilotmd": "vscode.markdown.preview.editor",                      // Copilot Markdown预览
+        "{hexdiff}:/**/*.*": "hexEditor.hexedit",                            // 十六进制编辑器
+        "*.bin": "default",                                                   // 二进制文件默认编辑器
+        "*.docx": "default",                                                  // Word文档默认编辑器
+        "{git,gitlens,git-graph}:/**/*.{md,csv,svg}": "default"              // Git相关文件默认编辑器
+    },
+    "workbench.settings.applyToAllProfiles": [],                              // 应用到所有配置文件的设置
+    "workbench.colorTheme": "Visual Studio 2017 Dark - C++",                 // 颜色主题
+
+    // ===== 8. 文件资源管理器配置 =====
+    "explorer.confirmDelete": false,                                          // 删除文件时不确认
+    "explorer.confirmDragAndDrop": false,                                     // 拖拽时不确认
+
+    // ===== 9. 构建系统配置 =====
+    "cmake.showOptionsMovedNotification": false,                              // 不显示CMake选项移动通知
+    "cmake.pinnedCommands": [                                                 // CMake固定命令
+        "workbench.action.tasks.configureTaskRunner",
+        "workbench.action.tasks.runTask"
+    ],
+    "makefile.configureOnOpen": true,                                         // 打开时配置Makefile
+
+    // ===== 10. 扩展配置 =====
+    "extensions.ignoreRecommendations": true,                                 // 忽略扩展推荐
+    "settingsSync.ignoredExtensions": [                                       // 同步时忽略的扩展
+        "espressif.esp-idf-extension"
+    ],
+
+    // ===== 11. 安全配置 =====
+    "security.workspace.trust.untrustedFiles": "open",                        // 允许打开不受信任的文件
+    "security.allowedUNCHosts": [                                             // 允许的UNC主机
+        "wsl.localhost"
+    ],
+
+    // ===== 12. 更新配置 =====
+    "update.mode": "none",                                                    // 禁用自动更新
+
+    // ===== 13. 十六进制编辑器配置 =====
+    "hexeditor.showOpenFileButton": true,                                     // 显示打开文件按钮
+
+    // ===== 14. ESP32 IDF配置 =====
+    "idf.pythonInstallPath": "d:\\02-software-stash-cache\\02-esp32-idf\\tools\\tools\\idf-python\\3.11.2\\python.exe",  // ESP32 Python路径
+    "idf.hasWalkthroughBeenShown": true,                                      // ESP32引导已显示
+    "idf.gitPathWin": "d:\\02-software-stash-cache\\02-esp32-idf\\tools\\tools\\idf-git\\2.39.2\\cmd\\git.exe",           // ESP32 Git路径
+    "idf.espIdfPathWin": "d:\\02-software-stash-cache\\02-esp32-idf\\frameworks\\esp-idf-v5.1.2",                        // ESP32 IDF框架路径
+    "idf.toolsPathWin": "d:\\02-software-stash-cache\\02-esp32-idf\\tools",   // ESP32工具路径
+    "idf.flashType": "UART",                                                  // ESP32烧录类型
+
+    // ===== 15. STM32开发配置 =====
+    "stm32-for-vscode.openOCDPath": false,                                    // STM32 OpenOCD路径
+    "stm32-for-vscode.makePath": false,                                       // STM32 Make路径
+    "stm32-for-vscode.armToolchainPath": "C:\\Program Files (x86)\\GNU Arm Embedded Toolchain\\10 2021.10\\bin",  // STM32 ARM工具链路径
+
+    // ===== 16. GitHub相关配置 =====
+    "githubPullRequests.pullBranch": "never",                                 // 永不拉取分支
+    "github.copilot.enable": {                                                // GitHub Copilot启用配置
+        "*": true,                                                            // 所有文件类型启用
+        "plaintext": true,                                                    // 纯文本启用
+        "markdown": false,                                                    // Markdown禁用
+        "scminput": false                                                     // SCM输入禁用
+    },
+    "github.copilot.nextEditSuggestions.enabled": true,                       // 启用下一个编辑建议
+
+    // ===== 17. 其他扩展配置 =====
+    "RainbowBrackets.depreciation-notice": false,                             // 禁用彩虹括号弃用通知
+    "docker.extension.enableComposeLanguageServer": false,                     // 禁用Docker Compose语言服务器
+    "cursor.cpp.disabledLanguages": [                                         // Cursor C++禁用语言
+        "markdown",
+        "scminput"
+    ],
+
+    // ===== 18. Python配置 =====
+    "[python]": {                                                             // Python文件配置
+        "diffEditor.ignoreTrimWhitespace": true                               // Python差异编辑器忽略空白
+    }
+} 

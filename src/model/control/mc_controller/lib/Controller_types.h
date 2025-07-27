@@ -3,9 +3,9 @@
  *
  * Code generated for Simulink model 'Controller'.
  *
- * Model version                  : 1.977
- * Simulink Coder version         : 9.0 (R2018b) 24-May-2018
- * C/C++ source code generated on : Fri Jun  6 14:06:23 2025
+ * Model version                  : 7.0
+ * Simulink Coder version         : 9.6 (R2021b) 14-May-2021
+ * C/C++ source code generated on : Sun Jul 27 11:47:43 2025
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex
@@ -19,15 +19,22 @@
 
 /* Model Code Variants */
 /**
- * Variant choices for normal variant control variables can be selected via:
- *  1. -DVC_VARIABLE1=VALUE1 -DVC_VARIABLE2=VALUE2 *  2. -DUSE_VARIANT_DEFINES_HEADER="header.h"  (header.h contains #define's)
+ * You can use either of the following to alter the value of "normal" variant
+ * control variables:
  *
- * Given a variant control expression in a Variant block such as "V==1", V is a
- * variant control variable. A normal variant control variable is a plain MATLAB
- * variable, i.e. not a Simulink.Parameter. By default the value defined for a
- * normal variant control variable is the value seen when generating code.
- * Alternatively, you can use Simulink.Parameter variant control variables to
- * specify code generation behavior.
+ *  1. -DVC_VARIABLE1=VALUE1 -DVC_VARIABLE2=VALUE2, etc.
+ *  2. -DUSE_VARIANT_DEFINES_HEADER="header.h" and within header.h you
+ *      specify "#define VC_VARIABLE VALUE1", etc.
+ *
+ * Variant control variables are the independent variables of variant control
+ * expressions specified in a variant block. For example, a Variant Source block
+ * may contain "V==1" and V is the variant control variable of this
+ * expression. A normal variant control variable is a plain MATLAB variable,
+ * i.e. not a Simulink.Parameter.  The default define for a normal variant
+ * control variable is the value specified in MATLAB at time of code generation.
+ *
+ * Alternatively, you can use Simulink.Parameter's as variant control variables to
+ * explicitly specify code generation behavior.
  */
 #ifdef USE_VARIANT_DEFINES_HEADER
 #define VARIANT_DEFINES_HEADER_STR(h)  #h
@@ -42,11 +49,84 @@
 #define AIRFRAME                       1
 #endif
 
-/* Exactly one variant for '<S2>/Control_Allocation' should be active */
-#if ((AIRFRAME == 6) ? 1 : 0) + ((AIRFRAME == 3) ? 1 : 0) + ((AIRFRAME == 5) ? 1 : 0) + ((AIRFRAME == 4) ? 1 : 0) + ((AIRFRAME == 8) ? 1 : 0) + ((AIRFRAME == 7) ? 1 : 0) + ((AIRFRAME == 2) ? 1 : 0) + ((AIRFRAME == 1) ? 1 : 0) != 1
-#error Exactly one variant for '<S2>/Control_Allocation' should be active
+/* MW_VALIDATE_PREPROCESSOR_VARIANT_CHOICES */
+#undef MW_HAVE_ACTIVE_VARIANT_CHOICE
+#undef MW_HAVE_MORE_THAN_ONE_ACTIVE_CHOICE
+#if AIRFRAME == 1
+#ifdef MW_HAVE_ACTIVE_VARIANT_CHOICE
+#define MW_HAVE_MORE_THAN_ONE_ACTIVE_CHOICE
+#else
+#define MW_HAVE_ACTIVE_VARIANT_CHOICE
+#endif
 #endif
 
+#if AIRFRAME == 2
+#ifdef MW_HAVE_ACTIVE_VARIANT_CHOICE
+#define MW_HAVE_MORE_THAN_ONE_ACTIVE_CHOICE
+#else
+#define MW_HAVE_ACTIVE_VARIANT_CHOICE
+#endif
+#endif
+
+#if AIRFRAME == 3
+#ifdef MW_HAVE_ACTIVE_VARIANT_CHOICE
+#define MW_HAVE_MORE_THAN_ONE_ACTIVE_CHOICE
+#else
+#define MW_HAVE_ACTIVE_VARIANT_CHOICE
+#endif
+#endif
+
+#if AIRFRAME == 4
+#ifdef MW_HAVE_ACTIVE_VARIANT_CHOICE
+#define MW_HAVE_MORE_THAN_ONE_ACTIVE_CHOICE
+#else
+#define MW_HAVE_ACTIVE_VARIANT_CHOICE
+#endif
+#endif
+
+#if AIRFRAME == 5
+#ifdef MW_HAVE_ACTIVE_VARIANT_CHOICE
+#define MW_HAVE_MORE_THAN_ONE_ACTIVE_CHOICE
+#else
+#define MW_HAVE_ACTIVE_VARIANT_CHOICE
+#endif
+#endif
+
+#if AIRFRAME == 6
+#ifdef MW_HAVE_ACTIVE_VARIANT_CHOICE
+#define MW_HAVE_MORE_THAN_ONE_ACTIVE_CHOICE
+#else
+#define MW_HAVE_ACTIVE_VARIANT_CHOICE
+#endif
+#endif
+
+#if AIRFRAME == 7
+#ifdef MW_HAVE_ACTIVE_VARIANT_CHOICE
+#define MW_HAVE_MORE_THAN_ONE_ACTIVE_CHOICE
+#else
+#define MW_HAVE_ACTIVE_VARIANT_CHOICE
+#endif
+#endif
+
+#if AIRFRAME == 8
+#ifdef MW_HAVE_ACTIVE_VARIANT_CHOICE
+#define MW_HAVE_MORE_THAN_ONE_ACTIVE_CHOICE
+#else
+#define MW_HAVE_ACTIVE_VARIANT_CHOICE
+#endif
+#endif
+
+/* At most one variant choice can be active for block 'Controller/Controller/Control_Allocation' */
+#ifdef MW_HAVE_MORE_THAN_ONE_ACTIVE_CHOICE
+#error "At most one variant choice can be active for block 'Controller/Controller/Control_Allocation'"
+#endif
+
+/*At least one variant choice must be active for block 'Controller/Controller/Control_Allocation' */
+#ifndef MW_HAVE_ACTIVE_VARIANT_CHOICE
+#error "At least one variant choice must be active for block 'Controller/Controller/Control_Allocation'"
+#endif
+
+/* MW_END_VALIDATE_PREPROCESSOR_VARIANT_CHOICES */
 #ifndef DEFINED_TYPEDEF_FOR_FMS_Out_Bus_
 #define DEFINED_TYPEDEF_FOR_FMS_Out_Bus_
 
@@ -286,6 +366,69 @@ typedef struct {
 } struct_oqmoiGpNYV6eEvDoym9FPF;
 
 #endif
+
+#ifndef struct_tag_BRSaP7y3BhtPUJTbZuX5y
+#define struct_tag_BRSaP7y3BhtPUJTbZuX5y
+
+struct tag_BRSaP7y3BhtPUJTbZuX5y
+{
+  int32_T isInitialized;
+  boolean_T isSetupComplete;
+  real32_T pCumSum;
+  real32_T pCumSumRev[24];
+  real32_T pCumRevIndex;
+  real32_T pModValueRev;
+};
+
+#endif                                 /* struct_tag_BRSaP7y3BhtPUJTbZuX5y */
+
+#ifndef typedef_g_dsp_internal_SlidingWindowA_T
+#define typedef_g_dsp_internal_SlidingWindowA_T
+
+typedef struct tag_BRSaP7y3BhtPUJTbZuX5y g_dsp_internal_SlidingWindowA_T;
+
+#endif                             /* typedef_g_dsp_internal_SlidingWindowA_T */
+
+#ifndef struct_tag_BlgwLpgj2bjudmbmVKWwDE
+#define struct_tag_BlgwLpgj2bjudmbmVKWwDE
+
+struct tag_BlgwLpgj2bjudmbmVKWwDE
+{
+  uint32_T f1[8];
+};
+
+#endif                                 /* struct_tag_BlgwLpgj2bjudmbmVKWwDE */
+
+#ifndef typedef_cell_wrap_Controller_T
+#define typedef_cell_wrap_Controller_T
+
+typedef struct tag_BlgwLpgj2bjudmbmVKWwDE cell_wrap_Controller_T;
+
+#endif                                 /* typedef_cell_wrap_Controller_T */
+
+#ifndef struct_tag_1bqjMGkkIjGpVLizksnpTF
+#define struct_tag_1bqjMGkkIjGpVLizksnpTF
+
+struct tag_1bqjMGkkIjGpVLizksnpTF
+{
+  boolean_T matlabCodegenIsDeleted;
+  int32_T isInitialized;
+  boolean_T isSetupComplete;
+  boolean_T TunablePropsChanged;
+  cell_wrap_Controller_T inputVarSize;
+  g_dsp_internal_SlidingWindowA_T *pStatistic;
+  int32_T NumChannels;
+  g_dsp_internal_SlidingWindowA_T _pobj0;
+};
+
+#endif                                 /* struct_tag_1bqjMGkkIjGpVLizksnpTF */
+
+#ifndef typedef_dsp_simulink_MovingAverage_Co_T
+#define typedef_dsp_simulink_MovingAverage_Co_T
+
+typedef struct tag_1bqjMGkkIjGpVLizksnpTF dsp_simulink_MovingAverage_Co_T;
+
+#endif                             /* typedef_dsp_simulink_MovingAverage_Co_T */
 
 /* Forward declaration for rtModel */
 typedef struct tag_RTM_Controller_T RT_MODEL_Controller_T;
