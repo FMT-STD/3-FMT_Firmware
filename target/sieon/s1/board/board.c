@@ -315,11 +315,11 @@ void SystemClock_Config(void)
     LL_RCC_PLL1Q_Enable();
     LL_RCC_PLL1_SetVCOInputRange(LL_RCC_PLLINPUTRANGE_8_16);
     LL_RCC_PLL1_SetVCOOutputRange(LL_RCC_PLLVCORANGE_WIDE);
-    LL_RCC_PLL1_SetM(2);
-    LL_RCC_PLL1_SetN(120);
-    LL_RCC_PLL1_SetP(2);
-    LL_RCC_PLL1_SetQ(20);
-    LL_RCC_PLL1_SetR(2);
+    LL_RCC_PLL1_SetM(5);        /* 25MHz / 5 = 5MHz VCO input */
+    LL_RCC_PLL1_SetN(192);      /* 5MHz * 192 = 960MHz VCO output */
+    LL_RCC_PLL1_SetP(2);        /* 960MHz / 2 = 480MHz system clock */
+    LL_RCC_PLL1_SetQ(8);        /* 960MHz / 8 = 120MHz for USB/SDIO */
+    LL_RCC_PLL1_SetR(2);        /* 960MHz / 2 = 480MHz */
     LL_RCC_PLL1_Enable();
 
     /* Wait till PLL is ready */
@@ -351,11 +351,11 @@ void SystemClock_Config(void)
     LL_RCC_PLL2P_Enable();
     LL_RCC_PLL2_SetVCOInputRange(LL_RCC_PLLINPUTRANGE_8_16);
     LL_RCC_PLL2_SetVCOOutputRange(LL_RCC_PLLVCORANGE_MEDIUM);
-    LL_RCC_PLL2_SetM(1);
-    LL_RCC_PLL2_SetN(10);
-    LL_RCC_PLL2_SetP(2);
-    LL_RCC_PLL2_SetQ(2);
-    LL_RCC_PLL2_SetR(2);
+    LL_RCC_PLL2_SetM(5);        /* 25MHz / 5 = 5MHz VCO input */
+    LL_RCC_PLL2_SetN(48);       /* 5MHz * 48 = 240MHz VCO output */
+    LL_RCC_PLL2_SetP(2);        /* 240MHz / 2 = 120MHz */
+    LL_RCC_PLL2_SetQ(2);        /* 240MHz / 2 = 120MHz */
+    LL_RCC_PLL2_SetR(2);        /* 240MHz / 2 = 120MHz */
     LL_RCC_PLL2_Enable();
 
     /* Wait till PLL is ready */
