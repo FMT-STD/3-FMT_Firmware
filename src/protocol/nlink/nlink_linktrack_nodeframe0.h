@@ -9,7 +9,7 @@ typedef struct {
   linktrack_role_e role;
   uint8_t id;
   uint16_t data_length;
-  //可根据自身情况设置单节点单次最大数传长度，上限参考
+  // Can set single node max data length according to own situation, upper limit reference
   // LinkTrack Datasheet
   uint8_t data[224];
 } nlt_nodeframe0_node_t;

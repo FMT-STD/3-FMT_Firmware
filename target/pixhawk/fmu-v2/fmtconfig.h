@@ -26,9 +26,9 @@
 #define FMT_OUTPUT_PILOT_CMD
 
 /* MLog */
-#define MLOG_BUFFER_SIZE         4 * 1024  // 减少到4KB
-#define MLOG_SECTOR_SIZE         1024      // 减少扇区大小
-#define MLOG_MAX_SECTOR_TO_WRITE 3        // 减少最大写入扇区数
+#define MLOG_BUFFER_SIZE         4 * 1024  // Reduce to 4KB
+#define MLOG_SECTOR_SIZE         1024      // Reduce sector size
+#define MLOG_MAX_SECTOR_TO_WRITE 3        // Reduce max write sectors
 
 /* ULog */
 #define FMT_USING_ULOG
