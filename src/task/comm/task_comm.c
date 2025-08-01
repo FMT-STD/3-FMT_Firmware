@@ -837,13 +837,13 @@ TASK_EXPORT __fmt_task1_desc = {
     .dependency = NULL
 };
 
-TASK_EXPORT __fmt_task2_desc = {
-    .name = "mavobc",
-    .init = task_mavobc_init,
-    .entry = task_mavobc_entry,
-    .priority = MAVOBC_THREAD_PRIORITY,
-    .auto_start = true,
-    .stack_size = 2048,
-    .param = NULL,
-    .dependency = (char*[]) { "mavgcs", NULL }
-};
+// TASK_EXPORT __fmt_task2_desc = {
+//     .name = "mavobc",
+//     .init = task_mavobc_init,
+//     .entry = task_mavobc_entry,
+//     .priority = MAVOBC_THREAD_PRIORITY,
+//     .auto_start = false,
+//     .stack_size = 2048,
+//     .param = NULL,
+//     .dependency = (char*[]) { "mavgcs", NULL }
+// };
