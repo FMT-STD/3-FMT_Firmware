@@ -28,12 +28,12 @@ typedef struct {
 
 /* Debug pin mapping table */
 static const debug_pin_config_t debug_pin_configs[DEBUG_PIN_NUM] = {
-    { GPIOE, GPIO_Pin_9,  GPIO_PinSource9  },  // DEBUG_PIN_0
-    { GPIOE, GPIO_Pin_11, GPIO_PinSource11 },  // DEBUG_PIN_1
-    { GPIOE, GPIO_Pin_13, GPIO_PinSource13 },  // DEBUG_PIN_2
-    { GPIOE, GPIO_Pin_14, GPIO_PinSource14 },  // DEBUG_PIN_3
-    { GPIOD, GPIO_Pin_13, GPIO_PinSource13 },  // DEBUG_PIN_4
-    { GPIOD, GPIO_Pin_14, GPIO_PinSource14 },  // DEBUG_PIN_5
+    { GPIOE, GPIO_Pin_14, GPIO_PinSource14 },  // DEBUG_PIN_0 - PE14
+    { GPIOE, GPIO_Pin_13, GPIO_PinSource13 },  // DEBUG_PIN_1 - PE13
+    { GPIOE, GPIO_Pin_11, GPIO_PinSource11 },  // DEBUG_PIN_2 - PE11
+    { GPIOE, GPIO_Pin_9,  GPIO_PinSource9  },  // DEBUG_PIN_3 - PE9
+    { GPIOD, GPIO_Pin_13, GPIO_PinSource13 },  // DEBUG_PIN_4 - PD13
+    { GPIOD, GPIO_Pin_14, GPIO_PinSource14 },  // DEBUG_PIN_5 - PD14
 };
 
 /* Debug pin states tracking */
@@ -50,8 +50,8 @@ static void _debugpin_gpio_init(void)
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
     RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
 
-    /* Configure GPIOE pins (PE9, PE11, PE13, PE14) */
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_11 | GPIO_Pin_13 | GPIO_Pin_14;
+    /* Configure GPIOE pins (PE14, PE13, PE11, PE9) */
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_14 | GPIO_Pin_13 | GPIO_Pin_11 | GPIO_Pin_9;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;           // 输出模式
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;       // 50MHz速度
     GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;          // 推挽输出
@@ -63,7 +63,7 @@ static void _debugpin_gpio_init(void)
     GPIO_Init(GPIOD, &GPIO_InitStructure);
 
     /* Initialize all pins to low state */
-    GPIO_ResetBits(GPIOE, GPIO_Pin_9 | GPIO_Pin_11 | GPIO_Pin_13 | GPIO_Pin_14);
+    GPIO_ResetBits(GPIOE, GPIO_Pin_14 | GPIO_Pin_13 | GPIO_Pin_11 | GPIO_Pin_9);
     GPIO_ResetBits(GPIOD, GPIO_Pin_13 | GPIO_Pin_14);
 
     /* Reset states tracking */

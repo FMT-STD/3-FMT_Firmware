@@ -28,10 +28,10 @@ extern "C" {
 
 /* Debug pin IDs */
 typedef enum {
-    DEBUG_PIN_0 = 0,    // PE9  - Debug Pin 0
-    DEBUG_PIN_1 = 1,    // PE11 - Debug Pin 1  
-    DEBUG_PIN_2 = 2,    // PE13 - Debug Pin 2
-    DEBUG_PIN_3 = 3,    // PE14 - Debug Pin 3
+    DEBUG_PIN_0 = 0,    // PE14 - Debug Pin 0
+    DEBUG_PIN_1 = 1,    // PE13 - Debug Pin 1  
+    DEBUG_PIN_2 = 2,    // PE11 - Debug Pin 2
+    DEBUG_PIN_3 = 3,    // PE9  - Debug Pin 3
     DEBUG_PIN_4 = 4,    // PD13 - Debug Pin 4
     DEBUG_PIN_5 = 5,    // PD14 - Debug Pin 5
 } debug_pin_id_t;
@@ -92,10 +92,10 @@ debug_pin_state_t debugpin_get_state(debug_pin_id_t pin_id);
 static inline void debugpin_set_high(debug_pin_id_t pin_id)
 {
     switch(pin_id) {
-        case DEBUG_PIN_0: GPIOE->BSRRL = GPIO_Pin_9; break;
-        case DEBUG_PIN_1: GPIOE->BSRRL = GPIO_Pin_11; break;
-        case DEBUG_PIN_2: GPIOE->BSRRL = GPIO_Pin_13; break;
-        case DEBUG_PIN_3: GPIOE->BSRRL = GPIO_Pin_14; break;
+        case DEBUG_PIN_0: GPIOE->BSRRL = GPIO_Pin_14; break;
+        case DEBUG_PIN_1: GPIOE->BSRRL = GPIO_Pin_13; break;
+        case DEBUG_PIN_2: GPIOE->BSRRL = GPIO_Pin_11; break;
+        case DEBUG_PIN_3: GPIOE->BSRRL = GPIO_Pin_9;  break;
         case DEBUG_PIN_4: GPIOD->BSRRL = GPIO_Pin_13; break;
         case DEBUG_PIN_5: GPIOD->BSRRL = GPIO_Pin_14; break;
         default: break;
@@ -109,10 +109,10 @@ static inline void debugpin_set_high(debug_pin_id_t pin_id)
 static inline void debugpin_set_low(debug_pin_id_t pin_id)
 {
     switch(pin_id) {
-        case DEBUG_PIN_0: GPIOE->BSRRH = GPIO_Pin_9; break;
-        case DEBUG_PIN_1: GPIOE->BSRRH = GPIO_Pin_11; break;
-        case DEBUG_PIN_2: GPIOE->BSRRH = GPIO_Pin_13; break;
-        case DEBUG_PIN_3: GPIOE->BSRRH = GPIO_Pin_14; break;
+        case DEBUG_PIN_0: GPIOE->BSRRH = GPIO_Pin_14; break;
+        case DEBUG_PIN_1: GPIOE->BSRRH = GPIO_Pin_13; break;
+        case DEBUG_PIN_2: GPIOE->BSRRH = GPIO_Pin_11; break;
+        case DEBUG_PIN_3: GPIOE->BSRRH = GPIO_Pin_9;  break;
         case DEBUG_PIN_4: GPIOD->BSRRH = GPIO_Pin_13; break;
         case DEBUG_PIN_5: GPIOD->BSRRH = GPIO_Pin_14; break;
         default: break;
@@ -125,11 +125,11 @@ static inline void debugpin_set_low(debug_pin_id_t pin_id)
  */
 static inline void debugpin_toggle_fast(debug_pin_id_t pin_id)
 {
-    switch(pin_id) {
-        case DEBUG_PIN_0: GPIOE->ODR ^= GPIO_Pin_9; break;
-        case DEBUG_PIN_1: GPIOE->ODR ^= GPIO_Pin_11; break;
-        case DEBUG_PIN_2: GPIOE->ODR ^= GPIO_Pin_13; break;
-        case DEBUG_PIN_3: GPIOE->ODR ^= GPIO_Pin_14; break;
+    switch(pin_id) {        
+        case DEBUG_PIN_0: GPIOE->ODR ^= GPIO_Pin_14; break;
+        case DEBUG_PIN_1: GPIOE->ODR ^= GPIO_Pin_13; break;
+        case DEBUG_PIN_2: GPIOE->ODR ^= GPIO_Pin_11; break;
+        case DEBUG_PIN_3: GPIOE->ODR ^= GPIO_Pin_9; break;
         case DEBUG_PIN_4: GPIOD->ODR ^= GPIO_Pin_13; break;
         case DEBUG_PIN_5: GPIOD->ODR ^= GPIO_Pin_14; break;
         default: break;
