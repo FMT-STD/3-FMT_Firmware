@@ -27,7 +27,7 @@ extern "C" {
 #define TARGET_NAME  "Pixhawk FMUv2"
 
 // Interupt Vector Offset
-#define INT_VECTOR_OFFSET 0x4000
+#define INT_VECTOR_OFFSET 0x0
 // Internal SRAM memory size[Kbytes]
 #define SYSTEM_TOTAL_MEM_SIZE (0x30000) // 196K
 // Internal Free SRAM memory used by kernel (e.g, rt_malloc)
