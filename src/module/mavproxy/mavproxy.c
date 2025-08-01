@@ -318,7 +318,7 @@ void mavproxy_channel_loop(uint8_t chan)
         if (res == RT_EOK) {
             /* 根据通道类型设置不同的调试引脚 */
             if (chan == MAVPROXY_GCS_CHAN) {
-                DEBUG_FUNC_TOGGLE(DEBUG_PIN_5);  // 地面站通信任务执行周期
+                DEBUG_FUNC_TOGGLE(DEBUG_PIN_0);  // 地面站通信任务执行周期
             }
             
             /* switch mavproxy channel if needed */
