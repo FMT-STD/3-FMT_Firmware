@@ -74,4 +74,4 @@ int cmd_mlog(int argc, char** argv)
 {
     return syscmd_process(argc, argv, handle_cmd);
 }
-FINSH_FUNCTION_EXPORT_ALIAS(cmd_mlog, __cmd_mlog, start / stop mlog);
+// FINSH_FUNCTION_EXPORT_ALIAS(cmd_mlog, __cmd_mlog, start / stop mlog);
