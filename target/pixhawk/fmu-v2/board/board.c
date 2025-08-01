@@ -71,6 +71,7 @@
 #include "module/toml/toml.h"
 #include "module/utils/devmq.h"
 #include "module/workqueue/workqueue_manager.h"
+#include "module/debug_pin/drv_debugpin.h"
 
 #ifdef FMT_USING_SIH
     #include "model/plant/plant_interface.h"
@@ -277,7 +278,8 @@ void bsp_early_initialize(void)
     RT_CHECK(drv_i2c_soft_init());
 
     /* pwm driver init */
-    RT_CHECK(drv_pwm_init());
+    // RT_CHECK(drv_pwm_init());
+    RT_CHECK(drv_debugpin_init());
 
     /* system statistic module */
     FMT_CHECK(sys_stat_init());
@@ -375,11 +377,14 @@ void bsp_initialize(void)
 void bsp_post_initialize(void)
 {
     /* toml system configure */
-    if (bsp_parse_toml_sysconfig(toml_parse_config_file(SYS_CONFIG_FILE)) != FMT_EOK) {
-        /* use default system configuration */
-        FMT_CHECK(bsp_parse_toml_sysconfig(toml_parse_config_string(default_conf)));
-        printf("Default configuration loaded.\n");
-    }
+    // if (bsp_parse_toml_sysconfig(toml_parse_config_file(SYS_CONFIG_FILE)) != FMT_EOK) {
+    //     /* use default system configuration */
+    //     FMT_CHECK(bsp_parse_toml_sysconfig(toml_parse_config_string(default_conf)));
+    //     printf("Default configuration loaded.\n");
+    // }
+
+    FMT_CHECK(bsp_parse_toml_sysconfig(toml_parse_config_string(default_conf)));
+    printf("Default configuration loaded.\n");
 
     /* init rc */
     FMT_CHECK(pilot_cmd_init());
