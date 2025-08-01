@@ -28,6 +28,7 @@
 #include "module/sysio/pilot_cmd.h"
 #include "module/task_manager/task_manager.h"
 #include "task/logger/task_logger.h"
+#include "module/debug_pin/drv_debugpin.h"
 
 #define EVENT_VEHICLE_UPDATE (1 << 0)
 
@@ -53,7 +54,7 @@ void task_vehicle_entry(void* parameter)
 
     while (1) {
         res = rt_event_recv(&event_vehicle, wait_set, RT_EVENT_FLAG_OR | RT_EVENT_FLAG_CLEAR, RT_WAITING_FOREVER, &recv_set);
-
+        DEBUG_FUNC_TOGGLE(DEBUG_PIN_0);  // Vehicle task execution cycle
         if (res == RT_EOK) {
             if (recv_set & EVENT_VEHICLE_UPDATE) {
                 time_now = systime_now_ms();
@@ -76,11 +77,19 @@ void task_vehicle_entry(void* parameter)
                 PERIOD_EXECUTE3(plant_step, plant_model_info.period, time_now, plant_interface_step(timestamp););
 #endif
                 /* run INS model */
+                DEBUG_FUNC_START(DEBUG_PIN_1);
                 PERIOD_EXECUTE3(ins_step, ins_model_info.period, time_now, ins_interface_step(timestamp););
-                /* run FMS model */
+                DEBUG_FUNC_END(DEBUG_PIN_1);
+
+                // /* run FMS model */
+                DEBUG_FUNC_START(DEBUG_PIN_2);
                 PERIOD_EXECUTE3(fms_step, fms_model_info.period, time_now, fms_interface_step(timestamp););
-                /* run Controller model */
+                DEBUG_FUNC_END(DEBUG_PIN_2);
+
+                // /* run Controller model */
+                DEBUG_FUNC_START(DEBUG_PIN_3);
                 PERIOD_EXECUTE3(control_step, control_model_info.period, time_now, control_interface_step(timestamp););
+                DEBUG_FUNC_END(DEBUG_PIN_3);
 
                 /* send actuator command */
                 send_actuator_cmd();

@@ -18,6 +18,7 @@
 #include "module/mavproxy/mavproxy.h"
 #include "module/mavproxy/mavproxy_config.h"
 #include "module/utils/list.h"
+#include "module/debug_pin/drv_debugpin.h"
 
 #define MAVPROXY_INTERVAL            1
 #define MAX_PERIOD_MSG_QUEUE_SIZE    25
@@ -315,6 +316,11 @@ void mavproxy_channel_loop(uint8_t chan)
         res = rt_event_recv(&mav_handle.chan_handle_list[chan]->event, wait_set, RT_EVENT_FLAG_OR | RT_EVENT_FLAG_CLEAR, RT_WAITING_FOREVER, &recv_set);
 
         if (res == RT_EOK) {
+            /* 根据通道类型设置不同的调试引脚 */
+            if (chan == MAVPROXY_GCS_CHAN) {
+                DEBUG_FUNC_TOGGLE(DEBUG_PIN_5);  // 地面站通信任务执行周期
+            }
+            
             /* switch mavproxy channel if needed */
             if (mav_handle.chan_handle_list[chan]->devid != mav_handle.chan_handle_list[chan]->new_devid) {
                 if (mavproxy_switch_dev(chan, mav_handle.chan_handle_list[chan]->new_devid) == FMT_EOK) {

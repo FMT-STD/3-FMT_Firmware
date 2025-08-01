@@ -50,7 +50,7 @@ if PLATFORM == 'gcc':
     LPATH = ''
 
     if BUILD == 'debug':
-        CFLAGS += ' -O0 -gdwarf-2'
+        CFLAGS += ' -O0 -gdwarf-2 -fno-omit-frame-pointer -fno-inline-functions'
         AFLAGS += ' -gdwarf-2'
     else:
         CFLAGS += ' -O2'
