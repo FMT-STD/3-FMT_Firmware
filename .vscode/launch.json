@@ -107,6 +107,38 @@
             "serialNumber": "", //If you have more than one J-Link probe, add the serial number here.
             "svdFile": "target/amov/icf5/GD32F4xx.svd",
             "runToMain": true
+        },
+        {
+            "name": "fmuIO J-Link",
+            "type": "cortex-debug",
+            "request": "launch",
+            "cwd": "${workspaceRoot}",
+            "executable": "target/pixhawk/fmt-io/project/fmt_io.elf",
+            "serverpath": "${env:JLINK_SERVER}",
+            "servertype": "jlink",
+            "device": "STM32F100C8",
+            "interface": "swd",
+            "armToolchainPath": "${env:RTT_EXEC_PATH}",
+            "serialNumber": "", //If you have more than one J-Link probe, add the serial number here.
+            // "svdFile": "target/amov/icf5/GD32F4xx.svd",
+            "runToMain": true
+        },
+        {
+            "name": "trace_fmuV2",
+            "type": "cortex-debug",
+            "request": "attach",
+            "cwd": "${workspaceRoot}",
+            "executable": "target/pixhawk/fmu-v2/build/fmt_pixhawk-fmuv2.elf",
+            "servertype":"external",
+            "gdbTarget": "192.168.169.1:1234",
+            "device": "STM32F427VI",
+            "interface": "swd",
+            "armToolchainPath": "${env:RTT_EXEC_PATH}",
+            "showDevDebugOutput": "raw",
+            "openOCDLaunchCommands": [
+                "adapter_khz 4000"
+            ],
+            "runToEntryPoint": "main", 
         }
     ]
 }
