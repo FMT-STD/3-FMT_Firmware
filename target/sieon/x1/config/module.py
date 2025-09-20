@@ -8,7 +8,7 @@ MODULES = [
     # 'syscmd/*.c',
     'file_manager/*.c',
     'ftp/*.c',
-    "log/*.c",
+    # "log/*.c",
     "param/*.c",
     'utils/*.c',
     'mavproxy/*.c',
