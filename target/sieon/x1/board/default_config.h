@@ -21,21 +21,21 @@
 static char* default_conf = STRING(
 target = "YunDrone X1"\n
 [console]\n
-	[[console.devices]]\n
-	type = "serial"\n
-	name = "serial0"\n
-	baudrate = 57600\n
-	auto-switch = true\n
+	// [[console.devices]]\n
+	// type = "serial"\n
+	// name = "serial0"\n
+	// baudrate = 57600\n
+	// auto-switch = true\n
 	[[console.devices]]\n
 	type = "mavlink"\n
 	name = "mav_console"\n
-	auto-switch = true\n
+	// auto-switch = true\n
 [mavproxy]\n
-	[[mavproxy.devices]]\n
-	chan = 0\n
-	type = "serial"\n
-	name = "serial1"\n
-	baudrate = 57600\n
+	// [[mavproxy.devices]]\n
+	// chan = 0\n
+	// type = "serial"\n
+	// name = "serial1"\n
+	// baudrate = 57600\n
     [[mavproxy.devices]]\n
 	chan = 0\n
 	type = "usb"\n
