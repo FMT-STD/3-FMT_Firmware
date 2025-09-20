@@ -17,7 +17,7 @@
 #ifndef TASK_MLOG_H__
 #define TASK_MLOG_H__
 
-#include <rtthread.h>
+#include <firmament.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,9 +29,9 @@ extern "C" {
  * @brief Start mlog logging
  *
  * @param file_path Log file path, if NULL, auto-generate path
- * @return rt_err_t RT_EOK on success, error code on failure
+ * @return fmt_err_t FMT_EOK on success, error code on failure
  */
-rt_err_t task_mlog_start_logging(char* file_path);
+fmt_err_t task_mlog_start_logging(char* file_path);
 
 /**
  * @brief Stop mlog logging

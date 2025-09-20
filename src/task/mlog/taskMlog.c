@@ -14,19 +14,18 @@
  * limitations under the License.
  *****************************************************************************/
 
-#include <rtthread.h>
-#include <rtdevice.h>
+#include <firmament.h>
 #include <string.h>
 #include <stdio.h>
 
 #include "taskMlog.h"
-#include "fileManager.h"
+#include "module/file_manager/file_manager.h"
 #include "mlog.h"
 
 #define TAG "TaskMlog"
 
 /* Thread configuration */
-#define THREAD_PRIORITY 15
+#define THREAD_PRIORITY LOGGER_THREAD_PRIORITY
 #define THREAD_STACK_SIZE 4096
 #define THREAD_TIMESLICE 5
 
@@ -36,9 +35,9 @@
 /* Global variables */
 static struct rt_event _mlog_event;
 static int _mlog_event_inited = 0;
-static const mount_entry_t mnt_table[] = {{"sd0", "/", "elm", 0, NULL}, {NULL}};
+static const struct dfs_mount_tbl mnt_table[] = {{"sd0", "/", "elm", 0, NULL}, {NULL}};
 
-static rt_err_t task_mlog_init(void);
+static fmt_err_t task_mlog_init(void);
 /* Mlog update callback */
 static void mlog_update_cb(void) { rt_event_send(&_mlog_event, EVENT_MLOG_UPDATE); }
 
@@ -47,11 +46,11 @@ static void task_mlog_entry(void* parameter) {
   rt_err_t rt_err;
   rt_uint32_t recv_set = 0;
   rt_uint32_t wait_set = EVENT_MLOG_UPDATE;
-  rt_err_t result;
+  fmt_err_t result;
 
   /* Initialize mlog task */
   result = task_mlog_init();
-  if (result != RT_EOK) {
+  if (result != FMT_EOK) {
     while (1) {
       rt_thread_mdelay(3000);
       rt_kprintf("[%s] Failed to initialize mlog task: %d\n", TAG, result);
@@ -82,43 +81,44 @@ static void task_mlog_entry(void* parameter) {
 }
 
 /* Mlog task initialization */
-static rt_err_t task_mlog_init(void) {
-  rt_err_t result;
+static fmt_err_t task_mlog_init(void) {
+  rt_err_t rt_result;
+  fmt_err_t result;
 
   /* Create mlog event */
   if (!_mlog_event_inited) {
-    result = rt_event_init(&_mlog_event, "mlog_event", RT_IPC_FLAG_FIFO);
-    if (result != RT_EOK) {
-      rt_kprintf("[%s] Failed to create mlog event: %d\n", TAG, result);
-      return -1;
+    rt_result = rt_event_init(&_mlog_event, "mlog_event", RT_IPC_FLAG_FIFO);
+    if (rt_result != RT_EOK) {
+      rt_kprintf("[%s] Failed to create mlog event: %d\n", TAG, rt_result);
+      return FMT_ERROR;
     }
     _mlog_event_inited = 1;
   }
 
   /* Initialize file manager */
   result = file_manager_init(mnt_table);
-  if (result != RT_EOK) {
+  if (result != FMT_EOK) {
     while (1) {
       rt_kprintf("[%s] Failed to initialize file manager: %d\n", TAG, result);
       rt_thread_mdelay(3000);
     }
-    return -2;
+    return FMT_ERROR;
   }
 
   /* Initialize mlog */
   result = mlog_init();
-  if (result != RT_EOK) {
+  if (result != FMT_EOK) {
     rt_kprintf("[%s] Failed to initialize mlog: %d\n", TAG, result);
-    return -3;
+    return FMT_ERROR;
   }
 
   rt_kprintf("[%s] Mlog task initialized successfully\n", TAG);
-  return RT_EOK;
+  return FMT_EOK;
 }
 
 /* Start mlog logging */
-rt_err_t task_mlog_start_logging(char* file_path) {
-  rt_err_t result;
+fmt_err_t task_mlog_start_logging(char* file_path) {
+  fmt_err_t result;
   char log_name[100];
   char file_name[50];
   static uint8_t mlog_id = 0;
@@ -129,16 +129,16 @@ rt_err_t task_mlog_start_logging(char* file_path) {
   }
 
   /* Get current log session */
-  if (current_log_session(log_name) != RT_EOK) {
+  if (current_log_session(log_name) != FMT_EOK) {
     rt_kprintf("[%s] No available log session\n", TAG);
-    return -RT_ERROR;
+    return FMT_ERROR;
   }
 
   sprintf(file_name, "/mlog%d.bin", ++mlog_id);
   strcat(log_name, file_name);
 
   result = mlog_start(log_name);
-  if (result == RT_EOK) {
+  if (result == FMT_EOK) {
     rt_kprintf("[%s] Started logging to: %s\n", TAG, log_name);
   } else {
     rt_kprintf("[%s] Failed to start logging: %d\n", TAG, result);

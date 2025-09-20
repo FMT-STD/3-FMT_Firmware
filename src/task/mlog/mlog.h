@@ -17,7 +17,7 @@
 #ifndef MLOG_H__
 #define MLOG_H__
 
-#include <rtthread.h>
+#include <firmament.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -25,15 +25,15 @@ extern "C" {
 
 /* Feature switches */
 #ifndef MLOG_ENABLE_PARAM
-#define MLOG_ENABLE_PARAM 0
+#define MLOG_ENABLE_PARAM 1
 #endif
 
 #ifndef MLOG_ENABLE_MODEL_INFO
-#define MLOG_ENABLE_MODEL_INFO 0
+#define MLOG_ENABLE_MODEL_INFO 1
 #endif
 
 #ifndef MLOG_ENABLE_DESCRIPTION
-#define MLOG_ENABLE_DESCRIPTION 0
+#define MLOG_ENABLE_DESCRIPTION 1
 #endif
 
 /* Forward declarations for parameter types */
@@ -132,22 +132,24 @@ typedef struct {
 
 #define MLOG_ELEMENT_VEC(_name, _type, _num) {.name = #_name, .type = _type, .number = _num}
 
-#define MLOG_BUS_EXPORT static const mlog_bus_t __attribute__((used, section("MlogTab")))
-#define MLOG_BUS_DEFINE(_name, _elem_list) \
-  MLOG_BUS_EXPORT __mlog_bus_##_name = {   \
-      .name = #_name, .num_elem = sizeof(_elem_list) / sizeof(mlog_elem_t), .elem_list = _elem_list}
+#define MLOG_BUS_EXPORT                    RT_USED static const mlog_bus_t SECTION("MlogTab")
+#define MLOG_BUS_DEFINE(_name, _elem_list) MLOG_BUS_EXPORT __mlog_bus_##_name = { \
+    .name = #_name,                                                               \
+    .num_elem = sizeof(_elem_list) / sizeof(mlog_elem_t),                         \
+    .elem_list = _elem_list                                                       \
+}
 
 int mlog_get_bus_id(const char* bus_name);
-rt_err_t mlog_add_desc(char* desc);
-rt_err_t mlog_start(char* file_name);
+fmt_err_t mlog_add_desc(char* desc);
+fmt_err_t mlog_start(char* file_name);
 void mlog_stop(void);
-rt_err_t mlog_push_msg(const uint8_t* payload, uint8_t msg_id, uint16_t len);
+fmt_err_t mlog_push_msg(const uint8_t* payload, uint8_t msg_id, uint16_t len);
 uint8_t mlog_get_status(void);
 char* mlog_get_file_name(void);
 void mlog_show_statistic(void);
-rt_err_t mlog_register_callback(mlog_cb_type type, void (*cb_func)(void));
-rt_err_t mlog_deregister_callback(mlog_cb_type type, void (*cb_func)(void));
-rt_err_t mlog_init(void);
+fmt_err_t mlog_register_callback(mlog_cb_type type, void (*cb_func)(void));
+fmt_err_t mlog_deregister_callback(mlog_cb_type type, void (*cb_func)(void));
+fmt_err_t mlog_init(void);
 void mlog_async_output(void);
 
 #ifdef __cplusplus

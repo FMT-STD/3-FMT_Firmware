@@ -1,7 +1,5 @@
-#include "rtthread.h"
-#include <rtdevice.h>
-#include "uMCN.h"
-#include "rtconfig.h"
+#include <firmament.h>
+#include "module/ipc/uMCN.h"
 #include "mlog.h"
 
 /* Task definition */
@@ -12,11 +10,6 @@
 /* Test data generation frequency control */
 #ifndef MLOG_TEST_02_SD_MLOG_FREQ_HZ
 #define MLOG_TEST_02_SD_MLOG_FREQ_HZ 100  // Default 100Hz
-#endif
-
-#if defined(__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wpedantic"
 #endif
 
 typedef union {
@@ -63,30 +56,25 @@ typedef struct {
   Axis3f gyro_filter;
 } sensorData_t;
 
-// 恢复GCC诊断设置
-#if defined(__GNUC__)
-#pragma GCC diagnostic pop
-#endif
-
 static struct rt_thread task_tid_mlog_test;
 static rt_uint8_t task_stack_mlog_test[MLOG_TEST_THREAD_STACK_SIZE];
-static rt_bool_t mlog_test_running = RT_FALSE;
-static rt_bool_t mlog_test_thread_created = RT_FALSE;
+static bool mlog_test_running = false;
+static bool mlog_test_thread_created = false;
 static uint8_t mlog_push_en = 0;
 
 /* MCN hub for test data */
 MCN_DECLARE(mlog_test_data);
 MCN_DEFINE(mlog_test_data, sizeof(sensorData_t));
 
-static McnNode_t test_sub_node = RT_NULL;
+static McnNode_t test_sub_node = NULL;
 
 /* Timer trigger support */
 #define MLOG_TEST_EVENT_FLAG_TRIGGER (1u << 0)
 static struct rt_event mlog_test_event;
-static rt_timer_t mlog_test_timer = RT_NULL;
+static rt_timer_t mlog_test_timer = NULL;
 
 static void mlog_test_timer_cb(void *parameter) {
-  RT_UNUSED(parameter);
+  (void)parameter;
   rt_event_send(&mlog_test_event, MLOG_TEST_EVENT_FLAG_TRIGGER);
 }
 
@@ -102,14 +90,14 @@ static int Mlog_Test_Data_ID = -1;
 
 /* Test data generation variables */
 static int16_t test_counter = 0;
-static rt_bool_t test_increment = RT_TRUE;
+static bool test_increment = true;
 static const int16_t test_max_value = 1000;
 static const int16_t test_min_value = -1000;
 
 static int mlog_test_echo(void *parameter) {
   sensorData_t test_data;
 
-  if (mcn_copy_from_hub((McnHub *)parameter, &test_data) != RT_EOK) {
+  if (mcn_copy_from_hub((McnHub *)parameter, &test_data) != FMT_EOK) {
     return -1;
   }
 
@@ -138,13 +126,13 @@ static void mlog_test_init(void) {
 }
 
 static void mlog_test_rtos_init(void) {
-  rt_err_t result = mcn_advertise(MCN_HUB(mlog_test_data), mlog_test_echo);
-  if (result != RT_EOK) {
+  fmt_err_t result = mcn_advertise(MCN_HUB(mlog_test_data), mlog_test_echo);
+  if (result != FMT_EOK) {
     rt_kprintf("Failed to advertise mlog_test_data topic: %d\n", result);
   }
 
-  test_sub_node = mcn_subscribe(MCN_HUB(mlog_test_data), RT_NULL, RT_NULL);
-  if (test_sub_node == RT_NULL) {
+  test_sub_node = mcn_subscribe(MCN_HUB(mlog_test_data), NULL, NULL);
+  if (test_sub_node == NULL) {
     rt_kprintf("Failed to subscribe to mlog_test_data topic\n");
   }
 
@@ -153,9 +141,9 @@ static void mlog_test_rtos_init(void) {
 
   /* Calculate timer period based on frequency */
   rt_tick_t period_ticks = rt_tick_from_millisecond(1000 / MLOG_TEST_02_SD_MLOG_FREQ_HZ);
-  mlog_test_timer = rt_timer_create("mlog_test_tmr", mlog_test_timer_cb, RT_NULL, period_ticks,
+  mlog_test_timer = rt_timer_create("mlog_test_tmr", mlog_test_timer_cb, NULL, period_ticks,
                                     RT_TIMER_FLAG_PERIODIC | RT_TIMER_FLAG_SOFT_TIMER);
-  if (mlog_test_timer == RT_NULL) {
+  if (mlog_test_timer == NULL) {
     rt_kprintf("Failed to create mlog test timer\n");
   }
 }
@@ -175,12 +163,12 @@ static void generate_test_data(sensorData_t *data) {
   if (test_increment) {
     test_counter += 10;
     if (test_counter >= test_max_value) {
-      test_increment = RT_FALSE;
+      test_increment = false;
     }
   } else {
     test_counter -= 10;
     if (test_counter <= test_min_value) {
-      test_increment = RT_TRUE;
+      test_increment = true;
     }
   }
 
@@ -207,7 +195,7 @@ static void generate_test_data(sensorData_t *data) {
 }
 
 static void mlog_test_thread_entry(void *parameter) {
-  RT_UNUSED(parameter);
+  (void)parameter;
 
   mlog_test_rtos_init();
   mlog_test_init();
@@ -248,17 +236,17 @@ int mlog_test_start(void) {
 
   if (!mlog_test_thread_created) {
     /* Create and start thread */
-    rt_thread_init(&task_tid_mlog_test, "mlogTest", mlog_test_thread_entry, RT_NULL, task_stack_mlog_test,
+    rt_thread_init(&task_tid_mlog_test, "mlogTest", mlog_test_thread_entry, NULL, task_stack_mlog_test,
                    MLOG_TEST_THREAD_STACK_SIZE, MLOG_TEST_THREAD_PRIORITY, MLOG_TEST_THREAD_TIMESLICE);
     rt_thread_startup(&task_tid_mlog_test);
-    mlog_test_thread_created = RT_TRUE;
+    mlog_test_thread_created = true;
   }
 
   /* Start timer and enable data generation */
   if (mlog_test_timer) {
     rt_timer_start(mlog_test_timer);
   }
-  mlog_test_running = RT_TRUE;
+  mlog_test_running = true;
 
   rt_kprintf("Mlog test started\n");
   return 0;
@@ -274,12 +262,12 @@ void mlog_test_stop(void) {
   if (mlog_test_timer) {
     rt_timer_stop(mlog_test_timer);
   }
-  mlog_test_running = RT_FALSE;
+  mlog_test_running = false;
 
   rt_kprintf("Mlog test stopped\n");
 }
 
-rt_bool_t mlog_test_is_running(void) { return mlog_test_running; }
+bool mlog_test_is_running(void) { return mlog_test_running; }
 
 void mlog_test_get_data(sensorData_t *data) {
   if (!data) return;

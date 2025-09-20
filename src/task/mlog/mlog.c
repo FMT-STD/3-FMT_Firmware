@@ -14,7 +14,7 @@
  * limitations under the License.
  *****************************************************************************/
 
-#include <rtthread.h>
+#include <firmament.h>
 #include <string.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -22,7 +22,9 @@
 #include <stddef.h>
 #include <dfs_posix.h>
 
-#include "fileManager.h"
+#include "module/file_manager/file_manager.h"
+#include "module/param/param.h"
+#include "module/system/systime.h"
 #include "mlog.h"
 
 #define TAG "MLog"
@@ -31,26 +33,7 @@
 #define MLOG_SECTOR_SIZE 4096
 #define MLOG_MAX_SECTOR_TO_WRITE 5
 
-/* Define FMT error codes as RT error codes */
-#define FMT_ERROR -RT_ERROR
-#define FMT_EOK RT_EOK
-#define FMT_EINVAL -RT_EINVAL
-#define FMT_ENOMEM -RT_ENOMEM
-#define FMT_EFULL -RT_EFULL
-#define FMT_EBUSY -RT_EBUSY
-#define FMT_EEMPTY -RT_EEMPTY
-
-/* Use definitions from mlog.h instead of redefining */
-
-/* Define missing functions */
-#define param_get_group_count() 0
-#define param_get_table() NULL
-#define systime_now_ms() rt_tick_get_millisecond()
-#define ulog_w(tag, fmt, ...) rt_kprintf("[W/%s] " fmt "\n", tag, ##__VA_ARGS__)
-#define ulog_e(tag, fmt, ...) rt_kprintf("[E/%s] " fmt "\n", tag, ##__VA_ARGS__)
-#define ulog_i(tag, fmt, ...) rt_kprintf("[I/%s] " fmt "\n", tag, ##__VA_ARGS__)
-#define console_printf(fmt, ...) rt_kprintf(fmt, ##__VA_ARGS__)
-#define console_write(data, len) rt_kprintf("%.*s", len, data)
+/* Use definitions from firmament system */
 
 /* Define parameter types */
 #define PARAM_TYPE_INT8 1
@@ -62,7 +45,7 @@
 #define PARAM_TYPE_FLOAT 7
 #define PARAM_TYPE_DOUBLE 8
 
-/* Model info disabled by default in mlog.h; only define when enabled */
+/* Model info - use firmament system definitions */
 #if MLOG_ENABLE_MODEL_INFO
 typedef struct {
   char info[64];
@@ -82,51 +65,18 @@ static model_info_t plant_model_info = {"Plant Model"};
 #define PERIOD_EXECUTE(name, period, code)                  \
   do {                                                      \
     static uint32_t name##_last = 0;                        \
-    if (rt_tick_get_millisecond() - name##_last > period) { \
-      name##_last = rt_tick_get_millisecond();              \
+    if (systime_now_ms() - name##_last > period) {          \
+      name##_last = systime_now_ms();                       \
       code;                                                 \
     }                                                       \
   } while (0)
 
-/* Define critical section macros */
-#define OS_ENTER_CRITICAL rt_hw_interrupt_disable()
-#define OS_EXIT_CRITICAL rt_hw_interrupt_enable(level)
+/* Use firmament system critical section macros */
+#define OS_ENTER_CRITICAL rt_enter_critical()
+#define OS_EXIT_CRITICAL rt_exit_critical()
 
-/* Define list macros */
-struct list_head {
-  struct list_head *next, *prev;
-};
-
-#define LIST_HEAD_INIT(name) {&(name), &(name)}
-#define LIST_HEAD(name) struct list_head name = LIST_HEAD_INIT(name)
-#define INIT_LIST_HEAD(ptr) \
-  do {                      \
-    (ptr)->next = (ptr);    \
-    (ptr)->prev = (ptr);    \
-  } while (0)
-
-#define list_add_tail(new, head) \
-  do {                           \
-    (new)->next = (head);        \
-    (new)->prev = (head)->prev;  \
-    (head)->prev->next = (new);  \
-    (head)->prev = (new);        \
-  } while (0)
-
-#define list_del(entry)                  \
-  do {                                   \
-    (entry)->prev->next = (entry)->next; \
-    (entry)->next->prev = (entry)->prev; \
-  } while (0)
-
-/* Correct container/list helpers */
-#ifndef container_of
-#define container_of(ptr, type, member) ((type*)((char*)(ptr) - offsetof(type, member)))
-#endif
-#define list_entry(ptr, type, member) container_of(ptr, type, member)
-#define list_for_each_entry(pos, type, head, member)                         \
-  for (pos = list_entry((head)->next, type, member); &pos->member != (head); \
-       pos = list_entry(pos->member.next, type, member))
+/* Use firmament system list macros */
+#include "module/utils/list.h"
 
 #define WRITE_PAYLOAD(_payload, _len) write(mlog_handle.fid, _payload, _len);
 
@@ -290,7 +240,7 @@ void mlog_show_statistic(void) {
  *
  * @return FMT Error
  */
-rt_err_t mlog_register_callback(mlog_cb_type type, void (*cb_func)(void)) {
+fmt_err_t mlog_register_callback(mlog_cb_type type, void (*cb_func)(void)) {
   struct mlog_cb* node;
 
   if (cb_func == NULL) {
@@ -323,7 +273,7 @@ rt_err_t mlog_register_callback(mlog_cb_type type, void (*cb_func)(void)) {
  * @param cb_func callback function
  * @return fmt_err_t
  */
-rt_err_t mlog_deregister_callback(mlog_cb_type type, void (*cb_func)(void)) {
+fmt_err_t mlog_deregister_callback(mlog_cb_type type, void (*cb_func)(void)) {
   struct mlog_cb* pos;
 
   if (cb_func == NULL) {
@@ -386,7 +336,7 @@ int mlog_get_bus_id(const char* bus_name) {
  * @param desc description text, should not longer than MLOG_DESCRIPTION_SIZE
  * @return FMT Error
  */
-rt_err_t mlog_add_desc(char* desc) {
+fmt_err_t mlog_add_desc(char* desc) {
 #if MLOG_ENABLE_DESCRIPTION
   if (strlen(desc) > MLOG_DESCRIPTION_SIZE - 1) {
     ulog_w(TAG, "description too long.");
@@ -409,7 +359,7 @@ rt_err_t mlog_add_desc(char* desc) {
  *
  * @return FMT Error
  */
-rt_err_t mlog_push_msg(const uint8_t* payload, uint8_t msg_id, uint16_t len) {
+fmt_err_t mlog_push_msg(const uint8_t* payload, uint8_t msg_id, uint16_t len) {
   /*                           MLOG MSG Format                                 */
   /*   ======================================================================= */
   /*   | MLOG_BEGIN_MSG1 | MLOG_BEGIN_MSG2 | MSG_ID | PAYLOAD | MLOG_END_MSG | */
@@ -460,7 +410,7 @@ rt_err_t mlog_push_msg(const uint8_t* payload, uint8_t msg_id, uint16_t len) {
  * @param file_name mlog_handle file name with full path
  * @return FMT Error
  */
-rt_err_t mlog_start(char* file_name) {
+fmt_err_t mlog_start(char* file_name) {
   if (mlog_handle.log_status != MLOG_STATUS_IDLE) {
     ulog_w(TAG, "%s is logging, stop it first", mlog_handle.file_name);
     return FMT_EBUSY;
@@ -677,7 +627,7 @@ void mlog_async_output(void) {
  *
  * @return FMT Errors.
  */
-rt_err_t mlog_init(void) {
+fmt_err_t mlog_init(void) {
   static bool init_flag = false;
   if (init_flag == true) {
     return FMT_EOK;
