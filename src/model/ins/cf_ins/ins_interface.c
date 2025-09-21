@@ -482,66 +482,66 @@ void ins_interface_step(uint32_t timestamp)
     }
 
     /* run INS */
-    INS_step();
+    // INS_step();
 
     /* publish INS output */
     mcn_publish(MCN_HUB(ins_output), &INS_Y.INS_Out);
 
-    /* record INS input bus data if updated */
-    if (imu_data_updated) {
-        imu_data_updated = 0;
-        /* Log IMU data if IMU updated */
-        mlog_push_msg((uint8_t*)&INS_U.IMU, IMU_ID, sizeof(INS_U.IMU));
-    }
+    // /* record INS input bus data if updated */
+    // if (imu_data_updated) {
+    //     imu_data_updated = 0;
+    //     /* Log IMU data if IMU updated */
+    //     mlog_push_msg((uint8_t*)&INS_U.IMU, IMU_ID, sizeof(INS_U.IMU));
+    // }
 
-    if (mag_data_updated) {
-        mag_data_updated = 0;
-        /* Log Magnetometer data */
-        mlog_push_msg((uint8_t*)&INS_U.MAG, MAG_ID, sizeof(INS_U.MAG));
-    }
+    // if (mag_data_updated) {
+    //     mag_data_updated = 0;
+    //     /* Log Magnetometer data */
+    //     mlog_push_msg((uint8_t*)&INS_U.MAG, MAG_ID, sizeof(INS_U.MAG));
+    // }
 
-    if (baro_data_updated) {
-        baro_data_updated = 0;
-        /* Log Barometer data */
-        mlog_push_msg((uint8_t*)&INS_U.Barometer, Barometer_ID, sizeof(INS_U.Barometer));
-    }
+    // if (baro_data_updated) {
+    //     baro_data_updated = 0;
+    //     /* Log Barometer data */
+    //     mlog_push_msg((uint8_t*)&INS_U.Barometer, Barometer_ID, sizeof(INS_U.Barometer));
+    // }
 
-    if (gps_data_updated) {
-        gps_data_updated = 0;
-        /* Log GPS data */
-        mlog_push_msg((uint8_t*)&INS_U.GPS_uBlox, GPS_ID, sizeof(INS_U.GPS_uBlox));
-    }
+    // if (gps_data_updated) {
+    //     gps_data_updated = 0;
+    //     /* Log GPS data */
+    //     mlog_push_msg((uint8_t*)&INS_U.GPS_uBlox, GPS_ID, sizeof(INS_U.GPS_uBlox));
+    // }
 
-    if (rf_data_updated) {
-        rf_data_updated = 0;
-        /* Log Rangefinder data */
-        mlog_push_msg((uint8_t*)&INS_U.Rangefinder, Rangefinder_ID, sizeof(INS_U.Rangefinder));
-    }
+    // if (rf_data_updated) {
+    //     rf_data_updated = 0;
+    //     /* Log Rangefinder data */
+    //     mlog_push_msg((uint8_t*)&INS_U.Rangefinder, Rangefinder_ID, sizeof(INS_U.Rangefinder));
+    // }
 
-    if (optflow_data_updated) {
-        optflow_data_updated = 0;
-        /* Log Optical Flow data */
-        mlog_push_msg((uint8_t*)&INS_U.Optical_Flow, OpticalFlow_ID, sizeof(INS_U.Optical_Flow));
-    }
+    // if (optflow_data_updated) {
+    //     optflow_data_updated = 0;
+    //     /* Log Optical Flow data */
+    //     mlog_push_msg((uint8_t*)&INS_U.Optical_Flow, OpticalFlow_ID, sizeof(INS_U.Optical_Flow));
+    // }
 
-    if (airspeed_data_updated) {
-        airspeed_data_updated = 0;
-        /* Log AirSpeed data */
-        mlog_push_msg((uint8_t*)&INS_U.AirSpeed, AirSpeed_ID, sizeof(INS_U.AirSpeed));
-    }
+    // if (airspeed_data_updated) {
+    //     airspeed_data_updated = 0;
+    //     /* Log AirSpeed data */
+    //     mlog_push_msg((uint8_t*)&INS_U.AirSpeed, AirSpeed_ID, sizeof(INS_U.AirSpeed));
+    // }
 
-    if (ext_pos_data_updated) {
-        ext_pos_data_updated = 0;
-        /* Log External Position data */
-        mlog_push_msg((uint8_t*)&INS_U.External_Pos, ExtPos_ID, sizeof(INS_U.External_Pos));
-    }
+    // if (ext_pos_data_updated) {
+    //     ext_pos_data_updated = 0;
+    //     /* Log External Position data */
+    //     mlog_push_msg((uint8_t*)&INS_U.External_Pos, ExtPos_ID, sizeof(INS_U.External_Pos));
+    // }
 
-    /* Log INS output bus data */
-    DEFINE_TIMETAG(ins_output, 100);
-    if (check_timetag(TIMETAG(ins_output))) {
-        /* Log INS out data */
-        mlog_push_msg((uint8_t*)&INS_Y.INS_Out, INS_Out_ID, sizeof(INS_Y.INS_Out));
-    }
+    // /* Log INS output bus data */
+    // DEFINE_TIMETAG(ins_output, 100);
+    // if (check_timetag(TIMETAG(ins_output))) {
+    //     /* Log INS out data */
+    //     mlog_push_msg((uint8_t*)&INS_Y.INS_Out, INS_Out_ID, sizeof(INS_Y.INS_Out));
+    // }
 }
 
 void ins_interface_init(void)

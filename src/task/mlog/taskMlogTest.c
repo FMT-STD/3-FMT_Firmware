@@ -10,12 +10,12 @@
 
 typedef union {
   struct {
-    int16_t x;
-    int16_t y;
-    int16_t z;
+    float x;
+    float y;
+    float z;
   };
-  int16_t axis[3];
-} Axis3i16;
+  float axis[3];
+} Axis3f_raw;
 
 typedef union {
   struct {
@@ -46,8 +46,8 @@ typedef union {
 
 typedef struct {
   uint32_t timestamp;
-  Axis3i16 acc_raw;
-  Axis3i16 gyro_raw;
+  Axis3f_raw acc_raw;
+  Axis3f_raw gyro_raw;
   Axis3f acc_filter;
   Axis3f gyro_filter;
 } sensorData_t;
@@ -74,8 +74,8 @@ static void mlog_test_timer_cb(void *parameter) {
 
 /* Mlog bus definition for test data - same as sensor data */
 static mlog_elem_t Mlog_Test_Data_Elems[] __attribute__((used)) = {
-    MLOG_ELEMENT(timestamp, MLOG_UINT32),         MLOG_ELEMENT_VEC(acc_raw, MLOG_INT16, 3),
-    MLOG_ELEMENT_VEC(gyro_raw, MLOG_INT16, 3),    MLOG_ELEMENT_VEC(acc_filter, MLOG_FLOAT, 3),
+    MLOG_ELEMENT(timestamp, MLOG_UINT32),         MLOG_ELEMENT_VEC(acc_raw, MLOG_FLOAT, 3),
+    MLOG_ELEMENT_VEC(gyro_raw, MLOG_FLOAT, 3),    MLOG_ELEMENT_VEC(acc_filter, MLOG_FLOAT, 3),
     MLOG_ELEMENT_VEC(gyro_filter, MLOG_FLOAT, 3),
 };
 MLOG_BUS_DEFINE(Mlog_Test_Data, Mlog_Test_Data_Elems);
@@ -83,10 +83,11 @@ MLOG_BUS_DEFINE(Mlog_Test_Data, Mlog_Test_Data_Elems);
 static int Mlog_Test_Data_ID = -1;
 
 /* Test data generation variables */
-static int16_t test_counter = 0;
+static float test_counter = 0.0f;
 static bool test_increment = true;
-static const int16_t test_max_value = 1000;
-static const int16_t test_min_value = -1000;
+static const float test_max_value = 10.0f;
+static const float test_min_value = 0.0f;
+static const float test_step = 0.1f;
 
 static int mlog_test_echo(void *parameter) {
   sensorData_t test_data;
@@ -163,12 +164,12 @@ static void mlog_test_stop_cb(void) {
 static void generate_test_data(sensorData_t *data) {
   /* Generate simple increment/decrement pattern */
   if (test_increment) {
-    test_counter += 10;
+    test_counter += test_step;
     if (test_counter >= test_max_value) {
       test_increment = false;
     }
   } else {
-    test_counter -= 10;
+    test_counter -= test_step;
     if (test_counter <= test_min_value) {
       test_increment = true;
     }
@@ -177,23 +178,23 @@ static void generate_test_data(sensorData_t *data) {
   /* Fill test data */
   data->timestamp = rt_tick_get();
 
-  /* Raw data - simple pattern */
+  /* Raw data - simple pattern with offset values for different axes */
   data->acc_raw.x = test_counter;
-  data->acc_raw.y = test_counter / 2;
-  data->acc_raw.z = test_counter / 3;
+  data->acc_raw.y = test_counter + 1.0f;
+  data->acc_raw.z = test_counter + 2.0f;
 
-  data->gyro_raw.x = -test_counter;
-  data->gyro_raw.y = -test_counter / 2;
-  data->gyro_raw.z = -test_counter / 3;
+  data->gyro_raw.x = test_counter + 0.5f;
+  data->gyro_raw.y = test_counter + 1.5f;
+  data->gyro_raw.z = test_counter + 2.5f;
 
-  /* Filtered data - convert to float */
-  data->acc_filter.x = (float)data->acc_raw.x;
-  data->acc_filter.y = (float)data->acc_raw.y;
-  data->acc_filter.z = (float)data->acc_raw.z;
+  /* Filtered data - use float values directly with same offsets */
+  data->acc_filter.x = test_counter;
+  data->acc_filter.y = test_counter + 1.0f;
+  data->acc_filter.z = test_counter + 2.0f;
 
-  data->gyro_filter.x = (float)data->gyro_raw.x;
-  data->gyro_filter.y = (float)data->gyro_raw.y;
-  data->gyro_filter.z = (float)data->gyro_raw.z;
+  data->gyro_filter.x = test_counter + 0.5f;
+  data->gyro_filter.y = test_counter + 1.5f;
+  data->gyro_filter.z = test_counter + 2.5f;
 }
 
 /* Mlog test task initialization */
