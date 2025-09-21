@@ -1,0 +1,287 @@
+#include <firmament.h>
+#include "module/ipc/uMCN.h"
+#include "module/log/mlog.h"
+#include "module/task_manager/task_manager.h"
+
+/* Test data generation frequency control */
+#ifndef MLOG_TEST_02_SD_MLOG_FREQ_HZ
+#define MLOG_TEST_02_SD_MLOG_FREQ_HZ 100  // Default 100Hz
+#endif
+
+typedef union {
+  struct {
+    int16_t x;
+    int16_t y;
+    int16_t z;
+  };
+  int16_t axis[3];
+} Axis3i16;
+
+typedef union {
+  struct {
+    int32_t x;
+    int32_t y;
+    int32_t z;
+  };
+  int32_t axis[3];
+} Axis3i32;
+
+typedef union {
+  struct {
+    int64_t x;
+    int64_t y;
+    int64_t z;
+  };
+  int64_t axis[3];
+} Axis3i64;
+
+typedef union {
+  struct {
+    float x;
+    float y;
+    float z;
+  };
+  float axis[3];
+} Axis3f;
+
+typedef struct {
+  uint32_t timestamp;
+  Axis3i16 acc_raw;
+  Axis3i16 gyro_raw;
+  Axis3f acc_filter;
+  Axis3f gyro_filter;
+} sensorData_t;
+
+static bool mlog_test_running = false;
+static uint8_t mlog_push_en = 0;
+
+/* MCN hub for test data */
+MCN_DECLARE(mlog_test_data);
+MCN_DEFINE(mlog_test_data, sizeof(sensorData_t));
+
+static McnNode_t test_sub_node = NULL;
+
+/* Timer trigger support */
+#define MLOG_TEST_EVENT_FLAG_TRIGGER (1u << 0)
+static struct rt_event mlog_test_event;
+static rt_timer_t mlog_test_timer = NULL;
+static int mlog_test_start(void);
+
+static void mlog_test_timer_cb(void *parameter) {
+  (void)parameter;
+  rt_event_send(&mlog_test_event, MLOG_TEST_EVENT_FLAG_TRIGGER);
+}
+
+/* Mlog bus definition for test data - same as sensor data */
+static mlog_elem_t Mlog_Test_Data_Elems[] __attribute__((used)) = {
+    MLOG_ELEMENT(timestamp, MLOG_UINT32),         MLOG_ELEMENT_VEC(acc_raw, MLOG_INT16, 3),
+    MLOG_ELEMENT_VEC(gyro_raw, MLOG_INT16, 3),    MLOG_ELEMENT_VEC(acc_filter, MLOG_FLOAT, 3),
+    MLOG_ELEMENT_VEC(gyro_filter, MLOG_FLOAT, 3),
+};
+MLOG_BUS_DEFINE(Mlog_Test_Data, Mlog_Test_Data_Elems);
+
+static int Mlog_Test_Data_ID = -1;
+
+/* Test data generation variables */
+static int16_t test_counter = 0;
+static bool test_increment = true;
+static const int16_t test_max_value = 1000;
+static const int16_t test_min_value = -1000;
+
+static int mlog_test_echo(void *parameter) {
+  sensorData_t test_data;
+
+  if (mcn_copy_from_hub((McnHub *)parameter, &test_data) != FMT_EOK) {
+    return -1;
+  }
+
+  // char ax[16], ay[16], az[16], gx[16], gy[16], gz[16];
+  // console_printf(ax, sizeof(ax), "%.2f", (float)test_data.acc_raw.x);
+  // rt_snprintf(ay, sizeof(ay), "%.2f", (float)test_data.acc_raw.y);
+  // rt_snprintf(az, sizeof(az), "%.2f", (float)test_data.acc_raw.z);
+  // rt_snprintf(gx, sizeof(gx), "%.2f", (float)test_data.gyro_raw.x);
+  // rt_snprintf(gy, sizeof(gy), "%.2f", (float)test_data.gyro_raw.y);
+  // rt_snprintf(gz, sizeof(gz), "%.2f", (float)test_data.gyro_raw.z);
+
+  console_printf("gyr:%f %f %f acc:%f %f %f\n",
+    test_data.gyro_raw.x,
+    test_data.gyro_raw.y,
+    test_data.gyro_raw.z,
+    test_data.acc_raw.x,
+    test_data.acc_raw.y,
+    test_data.acc_raw.z);
+
+  // rt_kprintf("Mlog Test Echo - acc_raw: %s, %s, %s, gyro_raw: %s, %s, %s, timestamp: %lu\n", ax, ay, az, gx, gy, gz,
+  //            test_data.timestamp);
+
+  return 0;
+}
+
+static void mlog_test_init(void) {
+  /* Initialize mlog bus ID for test data */
+  Mlog_Test_Data_ID = mlog_get_bus_id("Mlog_Test_Data");
+  if (Mlog_Test_Data_ID < 0) {
+    rt_kprintf("Failed to get mlog bus ID for Mlog_Test_Data\n");
+  } else {
+    rt_kprintf("Mlog_Test_Data mlog bus ID: %d\n", Mlog_Test_Data_ID);
+  }
+}
+
+static void mlog_test_rtos_init(void) {
+  fmt_err_t result = mcn_advertise(MCN_HUB(mlog_test_data), mlog_test_echo);
+  if (result != FMT_EOK) {
+    rt_kprintf("Failed to advertise mlog_test_data topic: %d\n", result);
+  }
+
+  test_sub_node = mcn_subscribe(MCN_HUB(mlog_test_data), NULL);
+  if (test_sub_node == NULL) {
+    rt_kprintf("Failed to subscribe to mlog_test_data topic\n");
+  }
+
+  /* Initialize event and timer */
+  rt_event_init(&mlog_test_event, "mlog_test_evt", RT_IPC_FLAG_FIFO);
+
+  /* Calculate timer period based on frequency */
+  rt_tick_t period_ticks = rt_tick_from_millisecond(1000 / MLOG_TEST_02_SD_MLOG_FREQ_HZ);
+  mlog_test_timer = rt_timer_create("mlog_test_tmr", mlog_test_timer_cb, NULL, period_ticks,
+                                    RT_TIMER_FLAG_PERIODIC | RT_TIMER_FLAG_SOFT_TIMER);
+  if (mlog_test_timer == NULL) {
+    rt_kprintf("Failed to create mlog test timer\n");
+  }
+}
+
+static void mlog_test_start_cb(void) {
+  mlog_push_en = 1;
+  rt_kprintf("Mlog test data logging started\n");
+}
+
+static void mlog_test_stop_cb(void) {
+  mlog_push_en = 0;
+  rt_kprintf("Mlog test data logging stopped\n");
+}
+
+static void generate_test_data(sensorData_t *data) {
+  /* Generate simple increment/decrement pattern */
+  if (test_increment) {
+    test_counter += 10;
+    if (test_counter >= test_max_value) {
+      test_increment = false;
+    }
+  } else {
+    test_counter -= 10;
+    if (test_counter <= test_min_value) {
+      test_increment = true;
+    }
+  }
+
+  /* Fill test data */
+  data->timestamp = rt_tick_get();
+
+  /* Raw data - simple pattern */
+  data->acc_raw.x = test_counter;
+  data->acc_raw.y = test_counter / 2;
+  data->acc_raw.z = test_counter / 3;
+
+  data->gyro_raw.x = -test_counter;
+  data->gyro_raw.y = -test_counter / 2;
+  data->gyro_raw.z = -test_counter / 3;
+
+  /* Filtered data - convert to float */
+  data->acc_filter.x = (float)data->acc_raw.x;
+  data->acc_filter.y = (float)data->acc_raw.y;
+  data->acc_filter.z = (float)data->acc_raw.z;
+
+  data->gyro_filter.x = (float)data->gyro_raw.x;
+  data->gyro_filter.y = (float)data->gyro_raw.y;
+  data->gyro_filter.z = (float)data->gyro_raw.z;
+}
+
+/* Mlog test task initialization */
+fmt_err_t mlog_test_init_task(void) {
+  mlog_test_rtos_init();
+  mlog_test_init();
+  mlog_register_callback(MLOG_CB_START, mlog_test_start_cb);
+  mlog_register_callback(MLOG_CB_STOP, mlog_test_stop_cb);
+  mlog_test_start();
+  return FMT_EOK;
+}
+
+/* Mlog test task entry function */
+void mlog_test_thread_entry(void *parameter) {
+  sensorData_t test_data = {0};
+  rt_uint32_t received = 0;
+
+  rt_kprintf("Mlog test thread started, frequency: %d Hz\n", MLOG_TEST_02_SD_MLOG_FREQ_HZ);
+
+  while (1) {
+    /* Wait for timer event */
+    rt_event_recv(&mlog_test_event, MLOG_TEST_EVENT_FLAG_TRIGGER, RT_EVENT_FLAG_OR | RT_EVENT_FLAG_CLEAR,
+                  RT_WAITING_FOREVER, &received);
+
+    if (mlog_test_running) {
+      /* Generate test data */
+      generate_test_data(&test_data);
+
+      /* Publish to MCN hub */
+      mcn_publish(MCN_HUB(mlog_test_data), &test_data);
+
+      /* Push to mlog if enabled */
+      if (Mlog_Test_Data_ID >= 0 && mlog_push_en) {
+        mlog_push_msg((uint8_t *)&test_data, Mlog_Test_Data_ID, sizeof(sensorData_t));
+      }
+    }
+  }
+}
+
+/* Public interface functions */
+static int mlog_test_start(void) {
+  if (mlog_test_running) {
+    rt_kprintf("Mlog test is already running\n");
+    return -1;
+  }
+
+  /* Start timer and enable data generation */
+  if (mlog_test_timer) {
+    rt_timer_start(mlog_test_timer);
+  }
+  mlog_test_running = true;
+
+  rt_kprintf("Mlog test started\n");
+  return 0;
+}
+
+void mlog_test_stop(void) {
+  if (!mlog_test_running) {
+    rt_kprintf("Mlog test is not running\n");
+    return;
+  }
+
+  /* Stop timer and disable data generation */
+  if (mlog_test_timer) {
+    rt_timer_stop(mlog_test_timer);
+  }
+  mlog_test_running = false;
+
+  rt_kprintf("Mlog test stopped\n");
+}
+
+bool mlog_test_is_running(void) { return mlog_test_running; }
+
+void mlog_test_get_data(sensorData_t *data) {
+  if (!data) return;
+  if (mcn_poll(test_sub_node)) {
+    mcn_copy(MCN_HUB(mlog_test_data), test_sub_node, data);
+  }
+}
+
+TASK_EXPORT __fmt_task_desc = {
+    .name = "mlog_test",
+    .init = mlog_test_init_task,
+    .entry = mlog_test_thread_entry,
+    .priority = 15,
+    .auto_start = true,
+    .stack_size = 2048,
+    .param = NULL,
+    .dependency = NULL,
+    // .dependency = (char*[]) { "mlog", NULL }
+};
