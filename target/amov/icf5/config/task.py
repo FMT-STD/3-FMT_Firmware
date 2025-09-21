@@ -2,9 +2,8 @@
 
 TASKS = [
     'comm/*.c',
-    # 'logger/*.c',
+    'logger/*.c',
     'status/*.c',
-    'mlog/*.c',
     'vehicle/normal/*.c',
 ]
 
