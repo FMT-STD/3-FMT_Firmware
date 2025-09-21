@@ -471,11 +471,13 @@ void bsp_initialize(void)
 void bsp_post_initialize(void)
 {
     /* toml system configure */
-    if (bsp_parse_toml_sysconfig(toml_parse_config_file(SYS_CONFIG_FILE)) != FMT_EOK) {
-        /* use default system configuration */
-        FMT_CHECK(bsp_parse_toml_sysconfig(toml_parse_config_string(default_conf)));
-        printf("Default configuration loaded.\n");
-    }
+    // if (bsp_parse_toml_sysconfig(toml_parse_config_file(SYS_CONFIG_FILE)) != FMT_EOK) {
+    //     /* use default system configuration */
+    //     FMT_CHECK(bsp_parse_toml_sysconfig(toml_parse_config_string(default_conf)));
+    //     printf("Default configuration loaded.\n");
+    // }
+
+    FMT_CHECK(bsp_parse_toml_sysconfig(toml_parse_config_string(default_conf)));
 
     /* init rc */
     FMT_CHECK(pilot_cmd_init());
