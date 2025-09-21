@@ -139,9 +139,9 @@ fmt_err_t pmu_poll_battery_status(void)
         return FMT_ERROR;
     }
 
-    if (mlog_push_msg((uint8_t*)&bat_status, BATTERY_ID, sizeof(bat_status)) != FMT_EOK) {
-        return FMT_ERROR;
-    }
+    // if (mlog_push_msg((uint8_t*)&bat_status, BATTERY_ID, sizeof(bat_status)) != FMT_EOK) {
+    //     return FMT_ERROR;
+    // }
 
     return FMT_EOK;
 }

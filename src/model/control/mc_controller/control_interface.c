@@ -152,16 +152,16 @@ void control_interface_step(uint32_t timestamp)
         mcn_copy(MCN_HUB(ins_output), ins_out_nod, &Controller_U.INS_Out);
     }
 
-    Controller_step();
+    // Controller_step();
 
     mcn_publish(MCN_HUB(control_output), &Controller_Y.Control_Out);
 
-    DEFINE_TIMETAG(control_output, 100);
-    /* Log Control output bus data */
-    if (check_timetag(TIMETAG(control_output))) {
-        /* Log Control out data */
-        mlog_push_msg((uint8_t*)&Controller_Y.Control_Out, Control_Out_ID, sizeof(Control_Out_Bus));
-    }
+    // DEFINE_TIMETAG(control_output, 100);
+    // /* Log Control output bus data */
+    // if (check_timetag(TIMETAG(control_output))) {
+    //     /* Log Control out data */
+    //     mlog_push_msg((uint8_t*)&Controller_Y.Control_Out, Control_Out_ID, sizeof(Control_Out_Bus));
+    // }
 }
 
 void control_interface_init(void)

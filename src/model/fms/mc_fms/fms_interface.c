@@ -327,40 +327,40 @@ void fms_interface_step(uint32_t timestamp)
         mcn_copy(MCN_HUB(control_output), control_out_nod, &FMS_U.Control_Out);
     }
 
-    FMS_step();
+    // FMS_step();
 
     mcn_publish(MCN_HUB(fms_output), &FMS_Y.FMS_Out);
 
-    if (pilot_cmd_updated) {
-        pilot_cmd_updated = 0;
-        /* Log pilot command */
-        mlog_push_msg((uint8_t*)&FMS_U.Pilot_Cmd, Pilot_Cmd_ID, sizeof(Pilot_Cmd_Bus));
-    }
+    // if (pilot_cmd_updated) {
+    //     pilot_cmd_updated = 0;
+    //     /* Log pilot command */
+    //     mlog_push_msg((uint8_t*)&FMS_U.Pilot_Cmd, Pilot_Cmd_ID, sizeof(Pilot_Cmd_Bus));
+    // }
 
-    if (gcs_cmd_updated) {
-        gcs_cmd_updated = 0;
-        /* Log gcs command */
-        mlog_push_msg((uint8_t*)&FMS_U.GCS_Cmd, GCS_Cmd_ID, sizeof(GCS_Cmd_Bus));
-    }
+    // if (gcs_cmd_updated) {
+    //     gcs_cmd_updated = 0;
+    //     /* Log gcs command */
+    //     mlog_push_msg((uint8_t*)&FMS_U.GCS_Cmd, GCS_Cmd_ID, sizeof(GCS_Cmd_Bus));
+    // }
 
-    if (auto_cmd_updated) {
-        auto_cmd_updated = 0;
-        /* Log gcs command */
-        mlog_push_msg((uint8_t*)&FMS_U.Auto_Cmd, Auto_Cmd_ID, sizeof(Auto_Cmd_Bus));
-    }
+    // if (auto_cmd_updated) {
+    //     auto_cmd_updated = 0;
+    //     /* Log gcs command */
+    //     mlog_push_msg((uint8_t*)&FMS_U.Auto_Cmd, Auto_Cmd_ID, sizeof(Auto_Cmd_Bus));
+    // }
 
-    if (mission_data_updated) {
-        mission_data_updated = 0;
-        /* Log mission data */
-        mlog_push_msg((uint8_t*)&FMS_U.Mission_Data, Mission_Data_ID, sizeof(Mission_Data_Bus));
-    }
+    // if (mission_data_updated) {
+    //     mission_data_updated = 0;
+    //     /* Log mission data */
+    //     mlog_push_msg((uint8_t*)&FMS_U.Mission_Data, Mission_Data_ID, sizeof(Mission_Data_Bus));
+    // }
 
-    /* Log FMS output bus data */
-    DEFINE_TIMETAG(fms_output, 100);
-    if (check_timetag(TIMETAG(fms_output))) {
-        /* Log FMS out data */
-        mlog_push_msg((uint8_t*)&FMS_Y.FMS_Out, FMS_Out_ID, sizeof(FMS_Out_Bus));
-    }
+    // /* Log FMS output bus data */
+    // DEFINE_TIMETAG(fms_output, 100);
+    // if (check_timetag(TIMETAG(fms_output))) {
+    //     /* Log FMS out data */
+    //     mlog_push_msg((uint8_t*)&FMS_Y.FMS_Out, FMS_Out_ID, sizeof(FMS_Out_Bus));
+    // }
 }
 
 void fms_interface_init(void)
