@@ -333,23 +333,24 @@ void bsp_initialize(void)
     /* init imu0 */
     RT_CHECK(mpu6000_drv_init("spi1_dev4", "gyro0", "accel0"));
     /* init imu1 + mag0 */
-    RT_CHECK(l3gd20h_drv_init("spi1_dev2", "gyro1"));
-    RT_CHECK(lsm303d_drv_init("spi1_dev1", "mag0", "accel1"));
-    /* init barometer */
-    RT_CHECK(drv_ms5611_init("spi1_dev3", "barometer"));
-    /* init optical flow module (a mini tf included) */
-    // RT_CHECK(drv_mtf_01_init("serial3"));
-    /* init gps */
-    RT_CHECK(gps_ubx_init("serial2", "gps"));
+    // RT_CHECK(l3gd20h_drv_init("spi1_dev2", "gyro1"));
+    // RT_CHECK(lsm303d_drv_init("spi1_dev1", "mag0", "accel1"));
+    // /* init barometer */
+    // RT_CHECK(drv_ms5611_init("spi1_dev3", "barometer"));
+    // /* init optical flow module (a mini tf included) */
+    // // RT_CHECK(drv_mtf_01_init("serial3"));
+    // /* init gps */
+    // RT_CHECK(gps_ubx_init("serial2", "gps"));
 
     // drv_nlink_linktrack_init("serial4");
 
     /* register sensor to sensor hub */
     FMT_CHECK(register_sensor_imu("gyro0", "accel0", 0));
-    FMT_CHECK(register_sensor_mag("mag0", 0));
-    FMT_CHECK(register_sensor_barometer("barometer"));
-    FMT_CHECK(advertise_sensor_optflow(0));
-    FMT_CHECK(advertise_sensor_rangefinder(0));
+    // FMT_CHECK(register_sensor_mag("mag0", 0));
+    // FMT_CHECK(register_sensor_barometer("barometer"));
+    // FMT_CHECK(advertise_sensor_optflow(0));
+    // FMT_CHECK(advertise_sensor_rangefinder(0));
+
     if (strcmp(STR(VEHICLE_TYPE), "Fixwing") == 0) {
         if (drv_ms4525_init("i2c1_dev1", "airspeed") == RT_EOK) {
             FMT_CHECK(register_sensor_airspeed("airspeed"));
@@ -375,11 +376,13 @@ void bsp_initialize(void)
 void bsp_post_initialize(void)
 {
     /* toml system configure */
-    if (bsp_parse_toml_sysconfig(toml_parse_config_file(SYS_CONFIG_FILE)) != FMT_EOK) {
-        /* use default system configuration */
-        FMT_CHECK(bsp_parse_toml_sysconfig(toml_parse_config_string(default_conf)));
-        printf("Default configuration loaded.\n");
-    }
+    // if (bsp_parse_toml_sysconfig(toml_parse_config_file(SYS_CONFIG_FILE)) != FMT_EOK) {
+    //     /* use default system configuration */
+    //     FMT_CHECK(bsp_parse_toml_sysconfig(toml_parse_config_string(default_conf)));
+    //     printf("Default configuration loaded.\n");
+    // }
+
+    FMT_CHECK(bsp_parse_toml_sysconfig(toml_parse_config_string(default_conf)));
 
     /* init rc */
     FMT_CHECK(pilot_cmd_init());
@@ -402,11 +405,11 @@ void bsp_post_initialize(void)
     /* start device message queue work */
     FMT_CHECK(devmq_start_work());
 
-    /* init led control */
-    FMT_CHECK(led_control_init());
+    // /* init led control */
+    // FMT_CHECK(led_control_init());
 
-    /* initialize power management unit */
-    FMT_CHECK(pmu_init());
+    // /* initialize power management unit */
+    // FMT_CHECK(pmu_init());
 
     /* show system information */
     bsp_show_information();

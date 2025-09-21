@@ -1,11 +1,12 @@
 # Modify this file to decide which task are compiled
 
 TASKS = [
-    'vehicle/normal/*.c',
+    # 'vehicle/normal/*.c',
     'comm/*.c',
-    'logger/*.c',
-    'fmtio/*.c',
+    # 'logger/*.c',
+    # 'fmtio/*.c',
     'status/*.c',
+    'mlog/*.c',
 ]
 
 TASKS_CPPPATH = []
