@@ -106,7 +106,7 @@
             "armToolchainPath": "${env:RTT_EXEC_PATH}",
             "serialNumber": "", //If you have more than one J-Link probe, add the serial number here.
             "svdFile": "target/amov/icf5/GD32F4xx.svd",
-            "runToMain": true
+            "runToMain": false
         }
     ]
 }
